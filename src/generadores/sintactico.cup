@@ -1,0 +1,178 @@
+package generadores;
+import java_cup.runtime.Symbol;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
+/* Preliminaries to set up and use the scanner.  */
+parser code
+{:
+    
+    public void syntax_error(Symbol s){
+        System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
+    }
+
+:}
+
+action code
+{:
+    String tmp="";
+    String salida = "";
+    String aux = "";
+    int contador = 0;
+    ArrayList<String> signos = new ArrayList<String>();
+    ArrayList<String> declaraciones = new ArrayList<String>();
+    ArrayList<String> respuesta = new ArrayList<String>();
+    ArrayList<String> conjuntos = new ArrayList<String>();
+
+
+    //Formatear la notación
+    public ArrayList<String> formatear(){
+        for (String s:signos){
+            if (s.equals("|")|| s.equals(".")){
+                if (respuesta.size()>=1){
+                    salida = respuesta.get(respuesta.size()-1);
+                    respuesta.clear();
+                    respuesta.add("("+salida+s+declaraciones.get(declaraciones.size()-1)+")");
+                    cola.add("("+s+declaraciones.get(declaraciones.size()-1)+")");
+                    declaraciones.remove(declaraciones.size()-1);
+                    salida = "";
+                }else{
+                    salida = "("+declaraciones.get(declaraciones.size()-1)+s+declaraciones.get(declaraciones.size()-2)+")";
+                    respuesta.add(salida);
+                    cola.add(salida);
+                    declaraciones.remove(declaraciones.size()-1);
+                    declaraciones.remove(declaraciones.size()-1);
+                    salida = "";
+                }
+            }else{       
+                if (respuesta.size()>=1){
+                    salida+=respuesta.get((respuesta.size()-1));
+                    respuesta.add("("+salida+s+")");
+                    salida="";
+                }else{
+                    respuesta.add("("+declaraciones.get(declaraciones.size()-1)+s+")");
+                    declaraciones.remove(declaraciones.size()-1);
+                    salida="";
+                }
+            }
+        }
+
+        //Sustituir la notación
+        while (conjuntos.size()!=contador){
+            salida = conjuntos.get(contador);
+            if (tmp.contains(salida)){
+                aux = respuesta.get(0).replaceAll(salida,conjuntos.get(contador+1));
+                contador+=2;
+                respuesta.clear();
+                respuesta.add(aux);
+            }else{ 
+                System.out.println("El conjunto: "+salida+ "esta mal declarado.");
+                conjuntos.clear();
+                break;
+            }
+            
+        }
+        aux = "";
+        contador = 0;
+        System.out.println(respuesta);
+        //System.out.println(conjuntos);
+        return respuesta;
+    }
+
+    public void extraerNotacion(){
+        contador = 1;
+        aux = conjuntos.get(contador);
+        if (aux.contains("~")){
+        
+        }else{
+
+        }
+    }
+
+
+:}
+
+
+/* Terminals (tokens returned by the scanner). */
+terminal String IDENTIFICADOR,CONJUNTO,DOSPUNTOS,SIGNO_APERTURA,SIGNO_CIERRE,SIGNO_ASIGNACION,PUNTOCOMA,COMENTARIO;
+terminal String SEPARACION,SIGNO_UNI, SIGNO_COMB, TEXTO, NOTACION, CONJ;
+
+/* Non-terminals */
+nonterminal sentencias, asignaciones, cadenas, asignacion, expresiones, seccion, operacion, sentencia;
+nonterminal inicio;
+
+
+/* The grammar */
+start with inicio;
+
+inicio ::= SIGNO_APERTURA sentencias
+                {:
+                    System.out.println(tmp);
+                    //formatear();
+                    tmp="";
+                :}
+;
+
+sentencias ::= asignaciones cadenas
+;
+
+asignaciones ::= asignacion asignaciones
+    //|COMENTARIO asignaciones
+    |expresiones asignaciones
+    |seccion
+;
+
+asignacion ::= CONJ DOSPUNTOS IDENTIFICADOR:id SIGNO_ASIGNACION NOTACION:no PUNTOCOMA
+            {:
+                conjuntos.add(id);
+                conjuntos.add("["+no+"]");
+            :}
+;
+
+expresiones ::= IDENTIFICADOR SIGNO_ASIGNACION operacion 
+            {:
+                formatear();
+                declaraciones.clear();
+                signos.clear();
+                respuesta.clear();
+            :}
+            PUNTOCOMA
+;
+
+operacion ::= SIGNO_COMB:comb operacion operacion
+            {:
+                tmp +=comb;
+                signos.add(comb);
+            :}
+    |SIGNO_UNI:uni operacion
+            {:
+                tmp +=uni;
+                signos.add(uni);
+            :}
+    |sentencia
+
+;
+
+sentencia ::= TEXTO:txt
+            {:
+                tmp +=txt;
+                declaraciones.add(txt);
+            :}
+    |CONJUNTO:cnj
+            {:
+                tmp +=cnj;
+                declaraciones.add(cnj);
+            :}
+;
+
+seccion ::= SEPARACION SEPARACION
+;
+
+cadenas ::= IDENTIFICADOR DOSPUNTOS TEXTO PUNTOCOMA cadenas
+    |SIGNO_CIERRE
+;
