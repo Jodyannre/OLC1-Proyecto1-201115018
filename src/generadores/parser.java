@@ -7,8 +7,7 @@ package generadores;
 
 import java_cup.runtime.Symbol;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import automata.Automata;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -152,6 +151,7 @@ class CUP$parser$actions {
 
 
     String tmp="";
+    String isLiteral = "";
     String salida = "";
     String aux = "";
     int contador = 0;
@@ -159,23 +159,24 @@ class CUP$parser$actions {
     ArrayList<String> declaraciones = new ArrayList<String>();
     ArrayList<String> respuesta = new ArrayList<String>();
     ArrayList<String> conjuntos = new ArrayList<String>();
-    Queue<String> cola=new LinkedList();
+    ArrayList<String> cola = new ArrayList<String>();
+    ArrayList<String> iLiteral = new ArrayList<String>();
+
 
     //Formatear la notación
     public ArrayList<String> formatear(){
+        System.out.println(iLiteral);
         for (String s:signos){
             if (s.equals("|")|| s.equals(".")){
                 if (respuesta.size()>=1){
                     salida = respuesta.get(respuesta.size()-1);
                     respuesta.clear();
                     respuesta.add("("+salida+s+declaraciones.get(declaraciones.size()-1)+")");
-                    cola.add("("+s+declaraciones.get(declaraciones.size()-1)+")");
                     declaraciones.remove(declaraciones.size()-1);
                     salida = "";
                 }else{
                     salida = "("+declaraciones.get(declaraciones.size()-1)+s+declaraciones.get(declaraciones.size()-2)+")";
                     respuesta.add(salida);
-                    cola.add(salida);
                     declaraciones.remove(declaraciones.size()-1);
                     declaraciones.remove(declaraciones.size()-1);
                     salida = "";
@@ -210,19 +211,15 @@ class CUP$parser$actions {
         }
         aux = "";
         contador = 0;
+        cola.add(respuesta.get(0));
         System.out.println(respuesta);
+        System.out.println("Una iteración");
+        System.out.println(cola);
+        System.out.println("----------------------");
         //System.out.println(conjuntos);
+        Automata au = new Automata();
+        au.conseguirInstrucciones(respuesta.get(0));
         return respuesta;
-    }
-
-    public void extraerNotacion(){
-        contador = 1;
-        aux = conjuntos.get(contador);
-        if (aux.contains("~")){
-        
-        }else{
-
-        }
     }
 
 
@@ -334,6 +331,8 @@ class CUP$parser$actions {
             {
               Object RESULT =null;
 
+                iLiteral.add(isLiteral);
+                isLiteral="";
                 formatear();
                 declaraciones.clear();
                 signos.clear();
@@ -363,6 +362,7 @@ class CUP$parser$actions {
 		String comb = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		
                 tmp +=comb;
+                isLiteral += comb;
                 signos.add(comb);
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("operacion",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -378,6 +378,7 @@ class CUP$parser$actions {
 		String uni = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
                 tmp +=uni;
+                isLiteral += uni;
                 signos.add(uni);
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("operacion",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -402,6 +403,7 @@ class CUP$parser$actions {
 		String txt = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
                 tmp +=txt;
+                isLiteral += txt;
                 declaraciones.add(txt);
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("sentencia",7, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -417,6 +419,7 @@ class CUP$parser$actions {
 		String cnj = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
                 tmp +=cnj;
+                isLiteral += cnj;
                 declaraciones.add(cnj);
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("sentencia",7, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

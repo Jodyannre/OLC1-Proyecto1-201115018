@@ -5,6 +5,7 @@ CONJ: digito -> 0~9;
 ExpReg1 -> . {letra} * | "_" | {letra} {digito};
 ExpresionReg2 -> . {digito} . "." + {digito};
 RegEx3 -> . {digito} * | "_" | {letra} {digito};
+Reg4 -> | | * "c" * "b" * "a";
 %%
 %%
 
@@ -12,3 +13,6 @@ hola : "hola";
 ExpReg1 : "primerLexemaCokoa";
 ExpresionReg2 : "34.44";
 }
+
+
+[{letra}"_"{letra}{digito}||*., {digito}"."{digito}+.., {digito}"_"{letra}{digito}||*., "c"*"b"*|"a"*|]

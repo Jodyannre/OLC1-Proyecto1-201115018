@@ -1,8 +1,7 @@
 package generadores;
 import java_cup.runtime.Symbol;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import automata.Automata;
 
 /* Preliminaries to set up and use the scanner.  */
 parser code
@@ -21,6 +20,7 @@ parser code
 action code
 {:
     String tmp="";
+    String isLiteral = "";
     String salida = "";
     String aux = "";
     int contador = 0;
@@ -28,23 +28,25 @@ action code
     ArrayList<String> declaraciones = new ArrayList<String>();
     ArrayList<String> respuesta = new ArrayList<String>();
     ArrayList<String> conjuntos = new ArrayList<String>();
+    ArrayList<String> cola = new ArrayList<String>();
+    ArrayList<String> iLiteral = new ArrayList<String>();
 
 
     //Formatear la notación
     public ArrayList<String> formatear(){
+        System.out.println("Literal");
+        System.out.println(iLiteral);
         for (String s:signos){
             if (s.equals("|")|| s.equals(".")){
                 if (respuesta.size()>=1){
                     salida = respuesta.get(respuesta.size()-1);
                     respuesta.clear();
                     respuesta.add("("+salida+s+declaraciones.get(declaraciones.size()-1)+")");
-                    cola.add("("+s+declaraciones.get(declaraciones.size()-1)+")");
                     declaraciones.remove(declaraciones.size()-1);
                     salida = "";
                 }else{
                     salida = "("+declaraciones.get(declaraciones.size()-1)+s+declaraciones.get(declaraciones.size()-2)+")";
                     respuesta.add(salida);
-                    cola.add(salida);
                     declaraciones.remove(declaraciones.size()-1);
                     declaraciones.remove(declaraciones.size()-1);
                     salida = "";
@@ -79,19 +81,15 @@ action code
         }
         aux = "";
         contador = 0;
+        cola.add(respuesta.get(0));
         System.out.println(respuesta);
+        System.out.println("Una iteración");
+        System.out.println(cola);
+        System.out.println("----------------------");
         //System.out.println(conjuntos);
+        Automata au = new Automata();
+        au.conseguirInstrucciones(respuesta.get(0));
         return respuesta;
-    }
-
-    public void extraerNotacion(){
-        contador = 1;
-        aux = conjuntos.get(contador);
-        if (aux.contains("~")){
-        
-        }else{
-
-        }
     }
 
 
@@ -136,22 +134,27 @@ asignacion ::= CONJ DOSPUNTOS IDENTIFICADOR:id SIGNO_ASIGNACION NOTACION:no PUNT
 
 expresiones ::= IDENTIFICADOR SIGNO_ASIGNACION operacion 
             {:
+                iLiteral.add(isLiteral);
+                isLiteral="";
                 formatear();
                 declaraciones.clear();
                 signos.clear();
                 respuesta.clear();
             :}
             PUNTOCOMA
+
 ;
 
 operacion ::= SIGNO_COMB:comb operacion operacion
             {:
                 tmp +=comb;
+                isLiteral += comb;
                 signos.add(comb);
             :}
     |SIGNO_UNI:uni operacion
             {:
                 tmp +=uni;
+                isLiteral += uni;
                 signos.add(uni);
             :}
     |sentencia
@@ -161,11 +164,13 @@ operacion ::= SIGNO_COMB:comb operacion operacion
 sentencia ::= TEXTO:txt
             {:
                 tmp +=txt;
+                isLiteral += txt;
                 declaraciones.add(txt);
             :}
     |CONJUNTO:cnj
             {:
                 tmp +=cnj;
+                isLiteral += cnj;
                 declaraciones.add(cnj);
             :}
 ;

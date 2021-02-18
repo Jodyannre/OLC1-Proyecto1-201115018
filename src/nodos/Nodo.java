@@ -5,33 +5,29 @@
  */
 package nodos;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  *
  * @author Jers_
  */
 public class Nodo {
     private byte nombre;
-    private Nodo izquierda,derecha;
+    private Nodo izquierda,derecha,atras;
     private String dato;
     
     public Nodo(int nombre,String dato){
         this.nombre = (byte)nombre;
         this.izquierda = null;
         this.derecha = null;
+        this.atras = null;
     }
     public Nodo(){
         this.izquierda = null;
         this.derecha = null;
+        this.atras=null;
     }
     
-    public void configurar(int nombre, String datos1, String datos2){
+    public void configurar(int nombre){
         this.nombre = (byte)nombre;
-        this.setIzquierda(datos1);
-        this.setDerecha(datos2);
     }
 
     /**
@@ -88,6 +84,20 @@ public class Nodo {
      */
     public void setDato(String dato) {
         this.dato = dato;
+    }
+
+    /**
+     * @return the atras
+     */
+    public Nodo getAtras() {
+        return atras;
+    }
+
+    /**
+     * @param atras the atras to set
+     */
+    public void setAtras(Nodo atras) {
+        this.atras = atras;
     }
     
     
