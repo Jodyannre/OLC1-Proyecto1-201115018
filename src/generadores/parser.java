@@ -218,7 +218,6 @@ class CUP$parser$actions {
         System.out.println("----------------------");
         //System.out.println(conjuntos);
         Automata au = new Automata();
-        au.conseguirInstrucciones(respuesta.get(0));
         return respuesta;
     }
 

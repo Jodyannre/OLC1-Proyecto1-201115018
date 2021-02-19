@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 
 /**
  *
@@ -24,8 +25,11 @@ public class prueba2 {
         Automata au = new Automata();
         //String instruccion = "((([0~9]+).\".\").[0~9])";
         //String instruccion = "(([0~9]|\"k\")|[a-b])";
-        String instruccion = "(((\"a\"*)|\"b\"*))";
-        au.generarReglas(instruccion);
+        //String instruccion = "(((\"a\"*)|\"b\"*))";
+        String instruccion = "\"c\"*\"b\"*|\"a\"*|";
+        ArrayList<String>estados = new ArrayList<String>();
+        estados.add(instruccion);
+        au.crearEstados(estados);
         
         
         

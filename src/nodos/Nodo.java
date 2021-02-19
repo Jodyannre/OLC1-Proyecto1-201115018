@@ -10,38 +10,42 @@ package nodos;
  * @author Jers_
  */
 public class Nodo {
-    private byte nombre;
-    private Nodo izquierda,derecha,atras;
+    private byte numero;
+    private String nombre;
+    private Nodo izquierda,derecha,atras,adelante;
     private String dato;
+    private boolean Final;
     
     public Nodo(int nombre,String dato){
-        this.nombre = (byte)nombre;
+        this.numero = (byte)numero;
         this.izquierda = null;
         this.derecha = null;
         this.atras = null;
+        this.adelante = null;
+        this.nombre="";
     }
     public Nodo(){
         this.izquierda = null;
         this.derecha = null;
         this.atras=null;
-    }
-    
-    public void configurar(int nombre){
-        this.nombre = (byte)nombre;
+        this.adelante = null;
+        this.dato="";
+        this.nombre="";
     }
 
     /**
      * @return the nombre
      */
-    public byte getNombre() {
+    public String getNombre() {
         return nombre;
     }
 
     /**
      * @param nombre the nombre to set
      */
-    public void setNombre(byte nombre) {
-        this.nombre = nombre;
+    public void setNombre(byte numero) {
+        this.nombre = "S"+numero;
+        this.setNumero(numero);
     }
 
     /**
@@ -98,6 +102,48 @@ public class Nodo {
      */
     public void setAtras(Nodo atras) {
         this.atras = atras;
+    }
+
+    /**
+     * @return the adelante
+     */
+    public Nodo getAdelante() {
+        return adelante;
+    }
+
+    /**
+     * @param adelante the adelante to set
+     */
+    public void setAdelante(Nodo adelante) {
+        this.adelante = adelante;
+    }
+
+    /**
+     * @return the Final
+     */
+    public boolean isFinal() {
+        return Final;
+    }
+
+    /**
+     * @param Final the Final to set
+     */
+    public void setFinal(boolean Final) {
+        this.Final = Final;
+    }
+
+    /**
+     * @return the numero
+     */
+    public byte getNumero() {
+        return numero;
+    }
+
+    /**
+     * @param numero the numero to set
+     */
+    public void setNumero(byte numero) {
+        this.numero = numero;
     }
     
     

@@ -5,6 +5,7 @@
  */
 package automata;
 import java.util.ArrayList;
+import java.util.Stack;
 import nodos.Nodo;
 
 /**
@@ -12,7 +13,7 @@ import nodos.Nodo;
  * @author Jers_
  */
 public class Automata {
-    private int n_estados;
+    private byte n_estados;
     private String reglas;
     private Nodo estadoI;
     private Lista listaEstados;
@@ -26,306 +27,425 @@ public class Automata {
     public Automata(){
         this.listaEstados = new Lista();
     }
-    private void reglaCruz(String inst){
+    private Object[] reglaCruz(Object[]inst){
+        //1-> Extraer datos
+        Object[]resultado = new Object[3];
         Nodo n1 = new Nodo();     
         Nodo n4 = new Nodo(); 
-        if (listaEstados.getPrimero()!=null){
-            listaEstados.getPrimero().setDato("epsilon");
-            n1.setDerecha(listaEstados.getPrimero());
-            listaEstados.getUltimo().setAtras(listaEstados.getPrimero());
-            n4.setDato("epsilon");
-            listaEstados.getUltimo().setDerecha(n4);
-            listaEstados.setPrimero(n1);
-            listaEstados.setUltimo(n4);
-
-        }else{
+        if (inst[0].equals(0)){
+            //Es solo texto
             Nodo n2 = new Nodo(); 
             Nodo n3 = new Nodo();
             n1.setDato("");
-            n2.setDato("epsilon");
-            n3.setDato(inst);
-            n4.setDato("epsilon");
-            n1.setDerecha(n2);
-            n2.setDerecha(n3);
+            n2.setDato("ε");
+            n3.setDato(inst[1].toString());
+            n4.setDato("ε");
+            n1.setIzquierda(n2);
+            n2.setIzquierda(n3);
+            //Regresar si vienen más de este tipo
             n3.setAtras(n2);
-            n3.setDerecha(n4);
-            listaEstados.setPrimero(n1);
-            listaEstados.setUltimo(n4);
+            n3.setIzquierda(n4);         
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n4;
+        }else{
+            //Trae apuntadores
+            Nodo n2 = (Nodo)inst[1];
+            Nodo n3 = (Nodo)inst[2];
+            n2.setDato("ε");
+            n4.setDato("ε");
+            n1.setIzquierda(n2);
+            n3.setIzquierda(n4);
+            n3.setAtras(n2);
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n4;
         }
+        return resultado;
     }
     
-    private void reglaKleene(String inst){
+    private Object[] reglaKleene(Object[] inst){
+        //1-> Extraer datos
+        Object[]resultado = new Object[3];
         Nodo n1 = new Nodo();     
         Nodo n4 = new Nodo(); 
-        if (listaEstados.getPrimero()!=null){
-            listaEstados.getPrimero().setDato("epsilon");
-            n1.setDerecha(listaEstados.getPrimero());
-            n1.setIzquierda(n4);
-            listaEstados.getUltimo().setAtras(listaEstados.getPrimero());
-            n4.setDato("epsilon");
-            listaEstados.getUltimo().setDerecha(n4);
-            listaEstados.setPrimero(n1);
-            listaEstados.setUltimo(n4);
-
-        }else{
+        if (inst[0].equals(0)){
+            //Es solo un texto
             Nodo n2 = new Nodo(); 
             Nodo n3 = new Nodo();
-            n1.setDato("");
-            n2.setDato("epsilon");
-            n3.setDato(inst);
-            n4.setDato("epsilon");
-            n1.setDerecha(n2);
-            n1.setIzquierda(n4);
-            n2.setDerecha(n3);
+            //n1.setDato("");
+            n2.setDato("ε");
+            n3.setDato(inst[1].toString());
+            n4.setDato("ε");
+            n1.setIzquierda(n2);
+            
+            //Cuando vienen 0 de ese tipo
+            n1.setAdelante(n4); //Va desde el inicio al último
+            n2.setIzquierda(n3);
             n3.setAtras(n2);
-            n3.setDerecha(n4);
-            listaEstados.setPrimero(n1);
-            listaEstados.setUltimo(n4);
+            n3.setIzquierda(n4);         
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n4;
+        }else{
+            //Trae apuntadores
+            Nodo n2 = (Nodo)inst[1];
+            Nodo n3 = (Nodo)inst[2];
+            n2.setDato("ε");
+            n4.setDato("ε");
+            n1.setIzquierda(n2);
+            n3.setIzquierda(n4);
+            n1.setAdelante(n4);
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n4;
+        }
+        return resultado;  
+    }
+    
+    private Object[] reglaConcatenacion(Object[] inst, Object[] inst2){             
+        Object[]resultado = new Object[3];
+        Nodo n3 = new Nodo();   
+        Nodo n1,n2,n1_2,n2_2;
+        if (inst[0].equals(0)){ //Si inst es el texto
+            //Viene texto y 1 con apuntadores
+            n1 = new Nodo();
+            n2 = new Nodo();
+            n2.setDato(inst[1].toString()); //Nuevo nodo con el texto o el comb
+            n3.setDato("ε");
+            n3 = (Nodo)inst2[1]; //Primera posición de la lista
+            n1.setIzquierda(n2);
+            n2.setIzquierda(n3);
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =(Nodo)inst2[2];            
+            
+        }else if (inst2[0].equals(0)){ //Si inst2 es el texto
+            n1 = (Nodo)inst[1]; //Primera posición de la lista
+            n2 = (Nodo)inst[2]; //Última posición de la lista
+            n3.setDato(inst2[1].toString());
+            n2.setIzquierda(n3);
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n3;                       
+        }else{
+            //Ambos son apuntadores
+            n1 = (Nodo)inst[1]; //Inicio de primera lista
+            n2 = (Nodo)inst[2]; //Último de primera lista
+            n1_2 = (Nodo)inst2[1]; //Inicio de segunda lista
+            n2_2 = (Nodo)inst2[2]; //Último de la segunda lista
+            n1_2.setDato("ε");
+            n2.setIzquierda(n1_2); //Dirección del último de la primera lista al primero de la segunda lista
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n2_2;
+        }
+        return resultado;
+    }
+    
+    private Object [] reglaCero_Uno(Object[]inst){
+        Object [] resultado = new Object[3];
+        Nodo n1 = new Nodo();     
+        Nodo n4 = new Nodo(); 
+        Nodo n2,n3;
+        if (inst[0].equals(0)){//Es un texto o un comb
+            n2 = new Nodo(); 
+            n3 = new Nodo();
+            n2.setDato(inst[1].toString());
+            n1.setIzquierda(n2);
+            n1.setDerecha(n4);
+            n2.setIzquierda(n3);
+            n3.setIzquierda(n4);
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n4;
+        }else{//Es una lista
+            n2 = (Nodo)inst[1];
+            n3 = (Nodo)inst[2];
+            n2.setDato("ε");
+            n4.setDato("ε");
+            n1.setIzquierda(n2);
+            n1.setDerecha(n4);
+            n3.setIzquierda(n4);
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n4;
+
+        } 
+        return resultado;
+    }
+    
+    private Object[] reglaDisyuncion(Object[]inst, Object[]inst2){
+        Nodo n1 = new Nodo();
+        Nodo n2 = new Nodo();
+        Nodo n3 = new Nodo();
+        Nodo n4 = new Nodo();
+        Nodo n5 = new Nodo();
+        Nodo n6 = new Nodo();        
+        Object[]resultado = new Object[3];
+                       
+        if (inst[0].equals(0)){
+            n4 = (Nodo)inst2[1];
+            n5 = (Nodo)inst2[2];
+            n2.setDato("ε");            
+            n4.setDato("ε");
+            n6.setDato("ε");
+            n3.setDato(inst[1].toString());
+            n1.setIzquierda(n2);
+            n2.setIzquierda(n3);
+            n1.setDerecha(n4);
+            n3.setIzquierda(n6);
+            n5.setIzquierda(n6);
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n6;            
+                        
+        }else if (inst2[0].equals(0)){
+            n2 = (Nodo)inst2[1];
+            n3 = (Nodo)inst2[2];
+            n2.setDato("ε");            
+            n4.setDato("ε");
+            n6.setDato("ε");
+            n5.setDato(inst[1].toString());
+            n1.setIzquierda(n2);
+            n1.setDerecha(n4);
+            n4.setIzquierda(n5);
+            n3.setIzquierda(n6);
+            n5.setIzquierda(n6);
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n6;                
+            
+        }else{
+            n2 = (Nodo)inst[1]; //Inicial de argumento 1
+            n3 = (Nodo)inst[2]; //Final de argumento 1
+            n2.setDato("ε");
+            n6.setDato("ε");
+            n4 = (Nodo)inst2[1]; //Inicial de argumento 2
+            n5 = (Nodo)inst2[2]; //Final de argumento 2
+            n4.setDato("ε");
+            n1.setIzquierda(n2);
+            n1.setDerecha(n4);
+            n3.setIzquierda(n6); //Último de argumento 1 hacia final de disyunción
+            n5.setIzquierda(n6); //Último de argumento 2 hacia final de disyunción
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n6;               
+
+        }
+        return resultado;
+    }
+   
+    
+    public void crearEstados(ArrayList<String>array){
+        Stack pilaSignos = new Stack();
+        Stack pilaElementos = new Stack();
+        Object[]respuesta;
+        boolean encontrado = false;
+        Object instrucciones[];
+        String caracter = "";
+        String texto = "";
+        String ultimoSigno = "";
+        int numElementos = 0;
+        for (String expresion:array){
+            
+            for (int i = expresion.length()-1;i>=0;i--){
+               caracter += expresion.charAt(i);
+               if ("+?*|.".contains(caracter)){
+                   //Agregar signos
+                   pilaSignos.push(caracter);
+               }else if (caracter.equals("\"")){
+                   //Conseguir texto
+                   instrucciones = obtenerTexto(expresion,i);
+                   pilaElementos.push(instrucciones);
+                   i = (int) instrucciones[2];
+                   encontrado = true;
+               }else if (caracter.equals("}")){
+                   //Conseguir conjunto
+                   instrucciones = obtenerConjunto(expresion,i);
+                   pilaElementos.push(instrucciones);
+                   i = (int) instrucciones[2];
+                   encontrado = true;                   
+               }
+               if (encontrado && !pilaSignos.empty()){
+                    
+                 do{
+                        ultimoSigno = pilaSignos.pop().toString();
+                        numElementos = pilaElementos.size();
+                         if ("*+?".contains(ultimoSigno) && numElementos>0){
+                             //Crear unitario
+                             respuesta = generarEstados((Object[])pilaElementos.pop(),null,ultimoSigno);
+                             pilaElementos.push(respuesta);
+                             if (pilaElementos.size()>1&&pilaSignos.size()>0){
+                                 
+                             }else{
+                                 break;
+                             }
+                         
+                         }else if (".|".contains(ultimoSigno)&&numElementos >1){
+                             //Crear de los otros
+                             respuesta = generarEstados((Object[])pilaElementos.pop(),(Object[])pilaElementos.pop(),ultimoSigno);
+                             pilaElementos.push(respuesta); 
+                             if (pilaElementos.size()>=1&&pilaSignos.size()>0){
+                                 
+                             }else{
+                                 break;
+                             }
+                         }else{
+                             pilaSignos.push(ultimoSigno); 
+                             break;
+                         }  
+                         if (pilaSignos.size()<1){
+                             break;
+                         }
+                    }while(true);
+
+
+               }
+               //Reiniciando todas las variables para la siguiente iteración
+               caracter = "";
+               ultimoSigno = "";
+               numElementos = 0;
+               encontrado = false;
+            }  
+        respuesta = (Object[])pilaElementos.pop();
+        listaEstados.setPrimero((Nodo)respuesta[1]);
+        listaEstados.setUltimo((Nodo)respuesta[2]);
+        pintar();
         }        
     }
     
-    private void reglaConcatenacion(String inst,String inst2){             
-        Nodo n3 = new Nodo();    
-        if (listaEstados.getPrimero()!=null){
-            n3.setDato(inst);
-            listaEstados.getUltimo().setDerecha(n3);
-            listaEstados.setUltimo(n3);
-        }else{
-            Nodo n2 = new Nodo();
-            Nodo n1 = new Nodo();
-            listaEstados.setPrimero(n1);
-            listaEstados.setUltimo(n3);
-            n2.setDato(inst);
-            n3.setDato(inst2);
-            n1.setDerecha(n2);
-            n2.setDerecha(n3);
+    private Object[] generarEstados(Object[]ins1,Object[]ins2,String signo){
+        Object[]array = new Object[0];
+        switch(signo){
+            case "+":
+                array = reglaCruz(ins1);
+                break;
+            case "*":
+                array = reglaKleene(ins1);
+                break;
+            case "?":
+                array = reglaCero_Uno(ins1);
+                break;
+            case ".":
+                array = reglaConcatenacion(ins1,ins2);
+                break;
+            case "|":
+                array = reglaDisyuncion(ins1,ins2);
+                break;
+            default:
+                break;
+                
         }
+        return array;
     }
     
-    private void reglaCero_Uno(String inst){
-        Nodo n1 = new Nodo();     
-        Nodo n4 = new Nodo(); 
-        if (listaEstados.getPrimero()!=null){
-            listaEstados.getPrimero().setDato("epsilon");
-            n1.setDerecha(listaEstados.getPrimero());
-            n1.setIzquierda(n4);
-            n4.setDato("epsilon");
-            listaEstados.getUltimo().setDerecha(n4);
-            listaEstados.setPrimero(n1);
-            listaEstados.setUltimo(n4);
-
-        }else{
-            Nodo n2 = new Nodo(); 
-            Nodo n3 = new Nodo();
-            n1.setDato("");
-            n2.setDato("epsilon");
-            n3.setDato(inst);
-            n4.setDato("epsilon");
-            n1.setDerecha(n2);
-            n1.setIzquierda(n4);
-            n2.setDerecha(n3);
-            n3.setDerecha(n4);
-            listaEstados.setPrimero(n1);
-            listaEstados.setUltimo(n4);
-        }          
+    private Object[] obtenerTexto(String texto,int i){
+        StringBuilder sb = new StringBuilder();
+        String resultado = "";
+        sb.append("\"");
+        Object array[] = new Object[3];
+        for (int j = i-1;j>=0;j--){
+            if (texto.charAt(j)=='"'){
+                sb.append(texto.charAt(j));
+                i = j;
+                break;
+            }
+            sb.append(texto.charAt(j));
+        }
+        //resultado+=texto.charAt(i);
+        resultado = sb.reverse().toString();
+        array[0]=0;
+        array[1]=resultado;
+        array[2]=i;
+        return array;
     }
     
-    private void reglaDisyuncion(String inst,String inst2){
-        Nodo n1 = new Nodo();
-        Nodo n3 = new Nodo();
-        Nodo n5 = new Nodo();
-        Nodo n6 = new Nodo();        
-                       
-        if (listaEstados.getPrimero()!=null){
-            n3.setDato("epsilon");
-            n5.setDato(inst);
-            n6.setDato("epsilon");
-            n1.setDerecha(listaEstados.getPrimero());
-            n1.setIzquierda(n3);
-            listaEstados.getUltimo().setDerecha(n6);
-            n3.setDerecha(n5);
-            n5.setDerecha(n6);
-            listaEstados.setPrimero(n1);
-            listaEstados.setUltimo(n6);           
-        }else{
-            Nodo n2 = new Nodo();
-            Nodo n4 = new Nodo();
-            listaEstados.setPrimero(n1);
-            listaEstados.setUltimo(n6);
-            n2.setDato("epsilon");
-            n3.setDato("epsilon");
-            n4.setDato(inst);
-            n5.setDato(inst2);
-            n6.setDato("epsilon");
-            n1.setDerecha(n2);
-            n2.setDerecha(n4);
-            n1.setIzquierda(n3);
-            n3.setDerecha(n5);
-            n4.setDerecha(n6);
-            n5.setDerecha(n6);
+    private Object[] obtenerConjunto(String texto, int i){
+        StringBuilder sb = new StringBuilder();
+        String resultado = "";
+        sb.append("\"");
+        Object array[] = new Object[3];
+        for (int j = i-1;j>=0;j--){
+            if (texto.charAt(j)=='{'){
+                sb.append(texto.charAt(j));
+                i = j;
+                break;
+            }
+            sb.append(texto.charAt(j));
         }
-        
+        //resultado+=texto.charAt(i);
+        resultado = sb.reverse().toString();
+        array[0]=0;
+        array[1]=resultado;
+        array[2]=i;
+        return array;
     }
+    
     
     public void pintar(){
-        
+        Nodo inicio = this.listaEstados.getPrimero();
+        this.listaEstados.getUltimo().setFinal(true);
+        String cabecera = "digraph afnd {"+"\n"
+                + " rankdir=LR;"+"\n"
+                + " size=\"8,5\""+"\n"
+                + " node [shape = circle]; S0;"+"\n"
+                + " node [shape = point]; qi"+"\n"
+                + " node [shape = circle];"+"\n"
+                + "qi -> S0;\n";
+        StringBuilder sb = new StringBuilder();
+        sb.append(cabecera);
+        recorrerLista(this.listaEstados.getPrimero(),sb);
+        //cabecera = "S -> "+this.listaEstados.getPrimero().getNombre()+";\n";
+        //sb.append(cabecera);
+        sb.append("}");
+        cabecera = sb.toString();
+        System.out.println(cabecera);
+        System.out.println("ε");
     }
     
-    public ArrayList<String> conseguirInstrucciones(String entrada){
-        ArrayList<String>inst = new ArrayList<>();
-        String temp = "";
-        entrada = entrada.replace('{',' ').replace('}',' ');
-        char[] tempCharArray = entrada.toCharArray();
-        entrada = String.valueOf(tempCharArray);
-        entrada = entrada.replaceAll("\\s","");
-        //System.out.println(entrada);
-        for (int i=0;i<entrada.length();i++){
-            if (entrada.charAt(i)=='(' && entrada.charAt(i+1)=='('){
-                
-            }else{
-                int j = i;
-                while (entrada.charAt(j)!=')'){
-                    if (entrada.charAt(j)!='('){
-                        temp+=entrada.charAt(j);                        
-                    }
-                    j++;
-                }
-                inst.add(temp);
-                temp ="";
-                i = j;
-            }
+    private Nodo recorrerLista(Nodo actual, StringBuilder sb){
+        String tmp;
+        if (actual==null){
+            return actual;
         }
-        //System.out.println("Instrucción ya formateada");
-        //System.out.println(inst);
-        //System.out.println("--------------------------");
-        return inst;
+        if("".equals(actual.getNombre())){
+            actual.setNombre(n_estados);
+            this.n_estados++;
+        }    
+        
+        if (actual.getAtras()!=null){
+            tmp = actual.getNombre()+" -> "+actual.getAtras().getNombre()+" [ label ="+actual.getAtras().getDato()+"];\n";
+            sb.append(tmp);
+        }
+        recorrerLista(actual.getIzquierda(),sb);
+        if (actual.getIzquierda()!=null){
+            tmp = actual.getNombre()+" -> "+actual.getIzquierda().getNombre()+" [ label ="+actual.getIzquierda().getDato()+"];\n";
+            sb.append(tmp);
+        }
+        recorrerLista(actual.getDerecha(),sb);
+        if (actual.getDerecha()!=null){
+            tmp = actual.getNombre()+" -> "+actual.getDerecha().getNombre()+" [ label ="+actual.getDerecha().getDato()+"];\n";
+            sb.append(tmp);
+        }
+        if (actual.getAdelante()!=null){
+            tmp = actual.getNombre()+" -> "+actual.getAdelante().getNombre()+" [ label ="+actual.getAdelante().getDato()+"];\n";
+            sb.append(tmp);
+        }     
+        return actual;
     }
     
-    public void generarReglas(String entrada){
-        ArrayList<String> inst = conseguirInstrucciones(entrada);
-        ArrayList<String> insts = new ArrayList<String>();
-        boolean cruz=false,kleen=false,conc=false,disyun=false,preg=false;
-        String aux ="";
-        
-        for (String instruccion:inst){
-            for (int i = 0; i<instruccion.length();i++){
-                if (instruccion.charAt(i)=='['){                    
-                    while (instruccion.charAt(i)!=']'){
-                        aux+=instruccion.charAt(i);
-                        i++;                      
-                    }
-                    aux+=instruccion.charAt(i);
-                    insts.add(aux);
-                    aux = "";
-                }
-                if (instruccion.charAt(i)=='\"'){
-                    i++;
-                    while (instruccion.charAt(i)!='\"'){
-                        aux+=instruccion.charAt(i);
-                        i++;
-                    }
-                    //aux+=instruccion.charAt(i);
-                    insts.add(aux);
-                    aux = "";
-                }
-                       
-                switch(instruccion.charAt(i)){
-                    case '+':
-                        cruz = true;
-                        break;
-                    case '*':
-                        kleen = true;
-                        break;
-                    case '?':
-                        preg = true;
-                        break;
-                    case '|':
-                        disyun = true;
-                        break;
-                    case '.':
-                        conc = true;
-                        break;
-                    default:
-                        break;
-                }  
-            }
-            if (cruz){
-                if (listaEstados.getPrimero()==null){
-                    reglaCruz(insts.get(0));
-                }else{
-                    aux = insts.get(insts.size()-1);
-                    insts.clear();
-                    insts.add(aux);
-                    aux = "";
-                    reglaCruz("");
-                }
-                System.out.println("Sería cruz");
-                System.out.println(insts);
-            }else if (kleen){
-                if (listaEstados.getPrimero()==null){
-                    reglaKleene(insts.get(0));
-                }else{
-                    aux = insts.get(insts.size()-1);
-                    insts.clear();
-                    insts.add(aux);
-                    aux = "";
-                    reglaKleene("");
-                }
-                System.out.println("Sería kleen");
-                System.out.println(insts);
-            }else if (preg){
-                if (listaEstados.getPrimero()==null){
-                    reglaCero_Uno(insts.get(0));
-                }else{
-                    aux = insts.get(insts.size()-1);
-                    insts.clear();
-                    insts.add(aux);
-                    aux = "";
-                    reglaCero_Uno("");
-                }
-                System.out.println("Sería preg");
-                System.out.println(insts);
-            }else if (conc){
-                if (listaEstados.getPrimero()==null){
-                    reglaConcatenacion(insts.get(0),insts.get(1));
-                }else{
-                    aux = insts.get(insts.size()-1);
-                    insts.clear();
-                    insts.add(aux);
-                    aux = "";
-                    reglaConcatenacion(insts.get(0),"");
-                }
-                System.out.println("Sería conc");
-                System.out.println(insts);
-            }else if (disyun){
-                if (listaEstados.getPrimero()==null){
-                    this.reglaDisyuncion(insts.get(0), insts.get(1));
-                }else{
-                    aux = insts.get(insts.size()-1);
-                    insts.clear();
-                    insts.add(aux);
-                    aux = "";
-                    this.reglaDisyuncion(insts.get(0), "");
-                }
-                System.out.println("Sería una disyuncion");
-                System.out.println(insts);
-            }else{
-                System.out.println("Lamentablemente llegamos aquí");
-            }
-            cruz = kleen = preg = conc = disyun = false;
-        }
-    }
     /**
      * @return the n_estados
      */
-    public int getN_estados() {
+    public byte getN_estados() {
         return n_estados;
     }
 
     /**
      * @param n_estados the n_estados to set
      */
-    public void setN_estados(int n_estados) {
+    public void setN_estados(byte n_estados) {
         this.n_estados = n_estados;
     }
 
