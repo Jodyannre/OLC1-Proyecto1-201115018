@@ -6,6 +6,8 @@ ExpReg1 -> . {letra} * | "_" | {letra} {digito};
 ExpresionReg2 -> . {digito} . "." + {digito};
 RegEx3 -> . {digito} * | "_" | {letra} {digito};
 Reg4 -> | | * "c" * "b" * "a";
+Reg5 -> . "a" . * | "a" "b" "b";
+Reg6 -> . . . * | "a" "b" "a" "b" "b";
 %%
 %%
 
@@ -16,3 +18,5 @@ ExpresionReg2 : "34.44";
 
 
 [{letra}"_"{letra}{digito}||*., {digito}"."{digito}+.., {digito}"_"{letra}{digito}||*., "c"*"b"*|"a"*|]
+[{letra}"_"{letra}{digito}||*., {digito}"."{digito}+.., {digito}"_"{letra}{digito}||*., "c"*"b"*|"a"*|, "a""a""b"|*"b"..]
+"a""b"|*"a"."b"."b".

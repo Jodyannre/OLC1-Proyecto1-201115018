@@ -29,7 +29,7 @@ public class Automata {
     }
     private Object[] reglaCruz(Object[]inst){
         //1-> Extraer datos
-        Object[]resultado = new Object[3];
+        Object[]resultado = new Object[4];
         Nodo n1 = new Nodo();     
         Nodo n4 = new Nodo(); 
         if (inst[0].equals(0)){
@@ -61,12 +61,13 @@ public class Automata {
             resultado[1] =n1;
             resultado[2] =n4;
         }
+        resultado[3]=inst[3];
         return resultado;
     }
     
     private Object[] reglaKleene(Object[] inst){
         //1-> Extraer datos
-        Object[]resultado = new Object[3];
+        Object[]resultado = new Object[4];
         Nodo n1 = new Nodo();     
         Nodo n4 = new Nodo(); 
         if (inst[0].equals(0)){
@@ -96,31 +97,33 @@ public class Automata {
             n1.setIzquierda(n2);
             n3.setIzquierda(n4);
             n1.setAdelante(n4);
+            n3.setAtras(n2);
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n4;
         }
+        resultado[3]=inst[3];
         return resultado;  
     }
     
     private Object[] reglaConcatenacion(Object[] inst, Object[] inst2){             
-        Object[]resultado = new Object[3];
+        Object[]resultado = new Object[4];
         Nodo n3 = new Nodo();   
         Nodo n1,n2,n1_2,n2_2;
-        if (inst[0].equals(0)){ //Si inst es el texto
+        if (inst[0].equals(0) && !inst2[0].equals(0)){ //Si inst es el texto
             //Viene texto y 1 con apuntadores
             n1 = new Nodo();
             n2 = new Nodo();
-            n2.setDato(inst[1].toString()); //Nuevo nodo con el texto o el comb
-            n3.setDato("ε");
+            //n2.setDato(inst[1].toString()); //Nuevo nodo con el texto o el comb        
             n3 = (Nodo)inst2[1]; //Primera posición de la lista
-            n1.setIzquierda(n2);
-            n2.setIzquierda(n3);
+            n3.setDato(inst[1].toString());
+            n1.setIzquierda(n3);
+            //n2.setIzquierda(n3);
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =(Nodo)inst2[2];            
             
-        }else if (inst2[0].equals(0)){ //Si inst2 es el texto
+        }else if (inst2[0].equals(0) && !inst[0].equals(0)){ //Si inst2 es el texto
             n1 = (Nodo)inst[1]; //Primera posición de la lista
             n2 = (Nodo)inst[2]; //Última posición de la lista
             n3.setDato(inst2[1].toString());
@@ -128,50 +131,73 @@ public class Automata {
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n3;                       
+        }else if (inst[0].equals(0) && inst2[0].equals(0)){
+            n1 = new Nodo();
+            n2 = new Nodo();
+            n3 = new Nodo();
+            n2.setDato(inst[1].toString());
+            n3.setDato(inst2[1].toString());
+            n1.setIzquierda(n2);
+            n2.setIzquierda(n3);
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n3;               
         }else{
             //Ambos son apuntadores
             n1 = (Nodo)inst[1]; //Inicio de primera lista
             n2 = (Nodo)inst[2]; //Último de primera lista
             n1_2 = (Nodo)inst2[1]; //Inicio de segunda lista
             n2_2 = (Nodo)inst2[2]; //Último de la segunda lista
-            n1_2.setDato("ε");
-            n2.setIzquierda(n1_2); //Dirección del último de la primera lista al primero de la segunda lista
+            //n1_2.setDato("ε");
+            n2.setIzquierda(n1_2.getIzquierda());
+            n2.setDerecha(n1_2.getDerecha());
+            n2.setAtras(n1_2.getAtras());
+            n2.setAdelante(n1_2.getAdelante());
+            n1_2.setIzquierda(null);
+            n1_2.setDerecha(null);
+            n1_2.setAdelante(null);
+            n1_2.setAtras(null);
+            //n2.setIzquierda(n1_2); //Dirección del último de la primera lista al primero de la segunda lista
             resultado[0] =1;
             resultado[1] =n1;
-            resultado[2] =n2_2;
+            resultado[2] =n2_2;            
         }
+        resultado[3]=inst[3];
         return resultado;
     }
     
     private Object [] reglaCero_Uno(Object[]inst){
-        Object [] resultado = new Object[3];
+        Object [] resultado = new Object[4];
         Nodo n1 = new Nodo();     
         Nodo n4 = new Nodo(); 
         Nodo n2,n3;
         if (inst[0].equals(0)){//Es un texto o un comb
             n2 = new Nodo(); 
             n3 = new Nodo();
-            n2.setDato(inst[1].toString());
+            n3.setDato(inst[1].toString());
+            n2.setDato("ε");
+            n4.setDato("ε");
             n1.setIzquierda(n2);
-            n1.setDerecha(n4);
+            n1.setAdelante(n4);
             n2.setIzquierda(n3);
             n3.setIzquierda(n4);
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n4;
         }else{//Es una lista
-            n2 = (Nodo)inst[1];
-            n3 = (Nodo)inst[2];
+            n2 = (Nodo)inst[1]; //Primer nodo de la lista
+            n3 = (Nodo)inst[2]; //Último nodo de la lista
             n2.setDato("ε");
             n4.setDato("ε");
             n1.setIzquierda(n2);
-            n1.setDerecha(n4);
+            n1.setAdelante(n4);
             n3.setIzquierda(n4);
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n4;
 
         } 
+        resultado[3]=inst[3];
         return resultado;
     }
     
@@ -182,9 +208,9 @@ public class Automata {
         Nodo n4 = new Nodo();
         Nodo n5 = new Nodo();
         Nodo n6 = new Nodo();        
-        Object[]resultado = new Object[3];
+        Object[]resultado = new Object[4];
                        
-        if (inst[0].equals(0)){
+        if (inst[0].equals(0) && !inst2[0].equals(0)){
             n4 = (Nodo)inst2[1];
             n5 = (Nodo)inst2[2];
             n2.setDato("ε");            
@@ -200,7 +226,7 @@ public class Automata {
             resultado[1] =n1;
             resultado[2] =n6;            
                         
-        }else if (inst2[0].equals(0)){
+        }else if (inst2[0].equals(0) && !inst[0].equals(0)){
             n2 = (Nodo)inst2[1];
             n3 = (Nodo)inst2[2];
             n2.setDato("ε");            
@@ -216,6 +242,21 @@ public class Automata {
             resultado[1] =n1;
             resultado[2] =n6;                
             
+        }else if (inst[0].equals(0) && inst2[0].equals(0)){
+            n2.setDato("ε");
+            n4.setDato("ε");
+            n6.setDato("ε");
+            n3.setDato(inst[1].toString());
+            n5.setDato(inst2[1].toString());
+            n1.setIzquierda(n2);
+            n1.setDerecha(n4);
+            n2.setIzquierda(n3);
+            n4.setIzquierda(n5);
+            n3.setIzquierda(n6);
+            n5.setIzquierda(n6);
+            resultado[0] =1;
+            resultado[1] =n1;
+            resultado[2] =n6;             
         }else{
             n2 = (Nodo)inst[1]; //Inicial de argumento 1
             n3 = (Nodo)inst[2]; //Final de argumento 1
@@ -233,6 +274,7 @@ public class Automata {
             resultado[2] =n6;               
 
         }
+        resultado[3]=inst[3];
         return resultado;
     }
    
@@ -240,29 +282,44 @@ public class Automata {
     public void crearEstados(ArrayList<String>array){
         Stack pilaSignos = new Stack();
         Stack pilaElementos = new Stack();
+        Stack pilaArbol = new Stack();
         Object[]respuesta;
+        int posicion = 0;
         boolean encontrado = false;
+        int posElem,posElem2,posSigno;
         Object instrucciones[];
+        Object signos[];
+        Object signo[];
+        Object elem1[];
+        Object elem2[];       
         String caracter = "";
         String texto = "";
-        String ultimoSigno = "";
-        int numElementos = 0;
+        String ultimoSigno;
+        int numElementos;
         for (String expresion:array){
             
             for (int i = expresion.length()-1;i>=0;i--){
                caracter += expresion.charAt(i);
                if ("+?*|.".contains(caracter)){
                    //Agregar signos
-                   pilaSignos.push(caracter);
+                   signo = new Object[2];
+                   signo[0]=caracter;
+                   signo[1]=posicion;
+                   posicion++;
+                   pilaSignos.push(signo);
                }else if (caracter.equals("\"")){
                    //Conseguir texto
                    instrucciones = obtenerTexto(expresion,i);
+                   instrucciones[3]=posicion;
+                   posicion++;
                    pilaElementos.push(instrucciones);
                    i = (int) instrucciones[2];
                    encontrado = true;
                }else if (caracter.equals("}")){
                    //Conseguir conjunto
                    instrucciones = obtenerConjunto(expresion,i);
+                   instrucciones[3]=posicion;
+                   posicion++;
                    pilaElementos.push(instrucciones);
                    i = (int) instrucciones[2];
                    encontrado = true;                   
@@ -270,7 +327,9 @@ public class Automata {
                if (encontrado && !pilaSignos.empty()){
                     
                  do{
-                        ultimoSigno = pilaSignos.pop().toString();
+                        signos = (Object[])pilaSignos.pop();
+                        ultimoSigno = signos[0].toString();
+                        posSigno = (int)signos[1];
                         numElementos = pilaElementos.size();
                          if ("*+?".contains(ultimoSigno) && numElementos>0){
                              //Crear unitario
@@ -284,15 +343,33 @@ public class Automata {
                          
                          }else if (".|".contains(ultimoSigno)&&numElementos >1){
                              //Crear de los otros
-                             respuesta = generarEstados((Object[])pilaElementos.pop(),(Object[])pilaElementos.pop(),ultimoSigno);
-                             pilaElementos.push(respuesta); 
+                             //Validar que la posición en que los elementos fueron agregados a la pila es más grande que la del signo
+                             elem1 =(Object[])pilaElementos.pop();
+                             posElem = (int)elem1[3];
+                             elem2 = (Object[])pilaElementos.pop();
+                             posElem2 = (int)elem2[3];
+                             
+                             if (posElem>posSigno && posElem2 > posSigno){
+                                respuesta = generarEstados(elem1,elem2,ultimoSigno);
+                                pilaElementos.push(respuesta);  
+                                
+                             }else{
+                                 pilaElementos.push(elem2);
+                                 pilaElementos.push(elem1);
+                                 pilaSignos.push(signos);
+                                 break;
+                             }
                              if (pilaElementos.size()>=1&&pilaSignos.size()>0){
                                  
                              }else{
                                  break;
                              }
                          }else{
-                             pilaSignos.push(ultimoSigno); 
+                             //signo= new Object[2];
+                             //signo[0]=ultimoSigno;
+                             //signo[1]=posicion;
+                             //posicion++;
+                             pilaSignos.push(signos); 
                              break;
                          }  
                          if (pilaSignos.size()<1){
@@ -344,7 +421,7 @@ public class Automata {
         StringBuilder sb = new StringBuilder();
         String resultado = "";
         sb.append("\"");
-        Object array[] = new Object[3];
+        Object array[] = new Object[4];
         for (int j = i-1;j>=0;j--){
             if (texto.charAt(j)=='"'){
                 sb.append(texto.charAt(j));
@@ -365,7 +442,8 @@ public class Automata {
         StringBuilder sb = new StringBuilder();
         String resultado = "";
         sb.append("\"");
-        Object array[] = new Object[3];
+        sb.append("}");
+        Object array[] = new Object[4];
         for (int j = i-1;j>=0;j--){
             if (texto.charAt(j)=='{'){
                 sb.append(texto.charAt(j));
@@ -373,7 +451,9 @@ public class Automata {
                 break;
             }
             sb.append(texto.charAt(j));
+            
         }
+        sb.append("\"");
         //resultado+=texto.charAt(i);
         resultado = sb.reverse().toString();
         array[0]=0;
@@ -416,12 +496,17 @@ public class Automata {
         
         if (actual.getAtras()!=null){
             tmp = actual.getNombre()+" -> "+actual.getAtras().getNombre()+" [ label ="+actual.getAtras().getDato()+"];\n";
-            sb.append(tmp);
+            if (sb.indexOf(tmp)==-1){           
+                sb.append(tmp);                
+            }
         }
         recorrerLista(actual.getIzquierda(),sb);
         if (actual.getIzquierda()!=null){
             tmp = actual.getNombre()+" -> "+actual.getIzquierda().getNombre()+" [ label ="+actual.getIzquierda().getDato()+"];\n";
-            sb.append(tmp);
+            if (sb.indexOf(tmp)==-1){           
+                sb.append(tmp);                
+            }
+
         }
         recorrerLista(actual.getDerecha(),sb);
         if (actual.getDerecha()!=null){

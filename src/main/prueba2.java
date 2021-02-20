@@ -26,7 +26,12 @@ public class prueba2 {
         //String instruccion = "((([0~9]+).\".\").[0~9])";
         //String instruccion = "(([0~9]|\"k\")|[a-b])";
         //String instruccion = "(((\"a\"*)|\"b\"*))";
-        String instruccion = "\"c\"*\"b\"*|\"a\"*|";
+        //String instruccion = "\"c\"*\"b\"*|\"a\"*|";
+        //String instruccion = "{monstruo}{ascii}{letra}{digito}...?";
+        //String instruccion = "{letra}\"_\"{letra}{digito}||*.";
+        //String instruccion = "{digito}\".\"{digito}+..";
+        //String instruccion = "\"a\"\"a\"\"b\"|*\"b\"..";
+        String instruccion = "\"a\"\"b\"|*\"a\".\"b\".\"b\".";
         ArrayList<String>estados = new ArrayList<String>();
         estados.add(instruccion);
         au.crearEstados(estados);

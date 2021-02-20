@@ -165,7 +165,9 @@ class CUP$parser$actions {
 
     //Formatear la notación
     public ArrayList<String> formatear(){
+        System.out.println("Literal:-----------------");
         System.out.println(iLiteral);
+        System.out.println("Literal:-----------------");
         for (String s:signos){
             if (s.equals("|")|| s.equals(".")){
                 if (respuesta.size()>=1){
