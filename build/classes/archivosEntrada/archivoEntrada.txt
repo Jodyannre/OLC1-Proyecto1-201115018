@@ -20,3 +20,5 @@ ExpresionReg2 : "34.44";
 [{letra}"_"{letra}{digito}||*., {digito}"."{digito}+.., {digito}"_"{letra}{digito}||*., "c"*"b"*|"a"*|]
 [{letra}"_"{letra}{digito}||*., {digito}"."{digito}+.., {digito}"_"{letra}{digito}||*., "c"*"b"*|"a"*|, "a""a""b"|*"b"..]
 "a""b"|*"a"."b"."b".
+"c"*"b"*|"a"*|
+{digito}"_"{letra}{digito}||*.

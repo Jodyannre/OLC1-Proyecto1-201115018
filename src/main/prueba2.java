@@ -5,7 +5,8 @@
  */
 package main;
 
-import automata.Automata;
+import arbol.Arbol;
+import automata.Afnd;
 import generadores.parser;
 import generadores.scanner;
 import java.io.BufferedReader;
@@ -21,8 +22,23 @@ import java.util.ArrayList;
  * @author Jers_
  */
 public class prueba2 {
-    public static void main(String[] args) {
-        Automata au = new Automata();
+    public static void main(String[] args) throws IOException {  
+        String entrada = leerArchivo();
+        scanner scan = new scanner(new BufferedReader( new StringReader(entrada)));
+        parser parser = new parser(scan);
+        try {
+            System.out.println("Inicia el analisis...\n");
+            parser.parse();
+            ArrayList<String>er = parser.getER();
+            ArrayList<String>id_er = parser.get_Id_ER();
+            System.out.println("Finaliza el analisis...");
+            System.out.println(er);
+            System.out.println(id_er);
+            System.out.println("Ya se imprimió");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        Afnd au = new Afnd();
         //String instruccion = "((([0~9]+).\".\").[0~9])";
         //String instruccion = "(([0~9]|\"k\")|[a-b])";
         //String instruccion = "(((\"a\"*)|\"b\"*))";
@@ -32,24 +48,11 @@ public class prueba2 {
         //String instruccion = "{digito}\".\"{digito}+..";
         //String instruccion = "\"a\"\"a\"\"b\"|*\"b\"..";
         String instruccion = "\"a\"\"b\"|*\"a\".\"b\".\"b\".";
-        ArrayList<String>estados = new ArrayList<String>();
-        estados.add(instruccion);
-        au.crearEstados(estados);
-        
-        
-        
-        try {
-            
-            String entrada = leerArchivo();
-            System.out.println("Inicia el analisis...\n");
-            scanner scan = new scanner(new BufferedReader( new StringReader(entrada)));
-            parser parser = new parser(scan);
-            parser.parse();
-            System.out.println("Finaliza el analisis...");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
 
+        Arbol arbol = au.crearEstados(instruccion);
+        arbol.calculos();
+        arbol.pintar();
+        System.out.println(parser.get_alfabeto());
     } 
     
     public static String leerArchivo() throws FileNotFoundException, IOException {

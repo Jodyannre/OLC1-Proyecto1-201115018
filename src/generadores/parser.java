@@ -7,7 +7,6 @@ package generadores;
 
 import java_cup.runtime.Symbol;
 import java.util.ArrayList;
-import automata.Automata;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -134,7 +133,14 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
 
-    
+    public ArrayList<String> er = new ArrayList<String>();
+    public ArrayList<String> id_er = new ArrayList<String>();
+    public ArrayList<String> conjuntos = new ArrayList<String>();
+    public ArrayList<String> id_conjuntos = new ArrayList<String>(); 
+    public ArrayList<String> entradas = new ArrayList<String>();
+    public ArrayList<String> id_entradas = new ArrayList<String>();
+    public ArrayList<String> alfabeto = new ArrayList<String>();
+
     public void syntax_error(Symbol s){
         System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
     }
@@ -143,6 +149,29 @@ public class parser extends java_cup.runtime.lr_parser {
         System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
     }
 
+    public ArrayList<String> getER(){
+        return er;
+    }
+    public ArrayList<String> get_Id_ER(){
+        return id_er;
+    }
+    public ArrayList<String> getConjuntos(){
+        return conjuntos;
+    }
+    public ArrayList<String> get_id_conjuntos(){
+        return id_conjuntos;
+    }
+    public ArrayList<String> getEntradas(){
+        return entradas;
+    }
+    public ArrayList<String> get_id_entradas(){
+        return id_entradas;
+    }    
+    public ArrayList<String> get_alfabeto(){
+        return alfabeto;
+    }   
+
+
 
 
 /** Cup generated class to encapsulate user supplied action code.*/
@@ -150,79 +179,85 @@ public class parser extends java_cup.runtime.lr_parser {
 class CUP$parser$actions {
 
 
-    String tmp="";
-    String isLiteral = "";
-    String salida = "";
-    String aux = "";
-    int contador = 0;
-    ArrayList<String> signos = new ArrayList<String>();
-    ArrayList<String> declaraciones = new ArrayList<String>();
-    ArrayList<String> respuesta = new ArrayList<String>();
-    ArrayList<String> conjuntos = new ArrayList<String>();
-    ArrayList<String> cola = new ArrayList<String>();
-    ArrayList<String> iLiteral = new ArrayList<String>();
-
-
-    //Formatear la notación
-    public ArrayList<String> formatear(){
-        System.out.println("Literal:-----------------");
-        System.out.println(iLiteral);
-        System.out.println("Literal:-----------------");
-        for (String s:signos){
-            if (s.equals("|")|| s.equals(".")){
-                if (respuesta.size()>=1){
-                    salida = respuesta.get(respuesta.size()-1);
-                    respuesta.clear();
-                    respuesta.add("("+salida+s+declaraciones.get(declaraciones.size()-1)+")");
-                    declaraciones.remove(declaraciones.size()-1);
-                    salida = "";
-                }else{
-                    salida = "("+declaraciones.get(declaraciones.size()-1)+s+declaraciones.get(declaraciones.size()-2)+")";
-                    respuesta.add(salida);
-                    declaraciones.remove(declaraciones.size()-1);
-                    declaraciones.remove(declaraciones.size()-1);
-                    salida = "";
-                }
-            }else{       
-                if (respuesta.size()>=1){
-                    salida+=respuesta.get((respuesta.size()-1));
-                    respuesta.add("("+salida+s+")");
-                    salida="";
-                }else{
-                    respuesta.add("("+declaraciones.get(declaraciones.size()-1)+s+")");
-                    declaraciones.remove(declaraciones.size()-1);
-                    salida="";
-                }
-            }
-        }
-
-        //Sustituir la notación
-        while (conjuntos.size()!=contador){
-            salida = conjuntos.get(contador);
-            if (tmp.contains(salida)){
-                aux = respuesta.get(0).replaceAll(salida,conjuntos.get(contador+1));
-                contador+=2;
-                respuesta.clear();
-                respuesta.add(aux);
-            }else{ 
-                System.out.println("El conjunto: "+salida+ "esta mal declarado.");
-                conjuntos.clear();
-                break;
-            }
-            
-        }
-        aux = "";
-        contador = 0;
-        cola.add(respuesta.get(0));
-        System.out.println(respuesta);
-        System.out.println("Una iteración");
-        System.out.println(cola);
-        System.out.println("----------------------");
-        //System.out.println(conjuntos);
-        Automata au = new Automata();
-        return respuesta;
+    String conjunto="";
+    String expresionR = "";
+    public void add_er(String texto){
+        er.add(texto);
     }
+    public void add_id_er(String texto){
+        id_er.add(texto);
+    }
+    public void add_conjunto(String texto){
+        conjuntos.add(texto);
+    }
+    public void add_id_conjunto(String texto){
+        id_conjuntos.add(texto);
+    }
+    public void add_entrada(String texto){
+        entradas.add(texto);
+    }
+    public void add_id_entrada(String texto){
+        id_entradas.add(texto);
+    }
+    public void add_alfabeto(String texto){
+        if (!alfabeto.contains(texto)){
+            alfabeto.add(texto);
+        }     
+    }
+    
+    public void determinar_repetido(String texto){
+        boolean enConj = false;
+        boolean may=false,min=false,dig=false,ascii=false;
+        String copia = texto;
+        copia = copia.replace("\"","");
+        char c = copia.charAt(0);
+        int primero,segundo;
+        for (String s: conjuntos){
+            if (s.contains("~")){
+                primero = s.charAt(0);
+                segundo = s.charAt(2);
+                if (primero >64 && segundo<91){
+                    may = true;
+                }else if (primero>47 && segundo<58){
+                    dig = true;
+                }else if (primero>96 && segundo<123){
+                    min = true;
+                }else{
+                    ascii = true;
+                }
 
+                if (c >64 && c<91 && may){
+                    enConj = true;
+                    return;
+                }else if (c>47 && c<58 && dig){
+                    enConj = true;
+                    return;
+                }else if (c>96 && c<123 && min){
+                    enConj = true;
+                    return;
+                }else if (c>=primero && c<=segundo && ascii){
+                    enConj = true;
+                    return;
+                }
+                ascii = false;
+                dig = false;
+                may = false;
+                min = false;
+
+
+            }else{
+                copia = s;
+                copia = copia.replaceAll(",","");
+                if (copia.contains(Character.toString(c))){
+                    return;
+                }
+            }
+        }
+
+        if (!enConj){
+            add_alfabeto(texto);
+        }
+    }
 
 
   private final parser parser;
@@ -265,9 +300,7 @@ class CUP$parser$actions {
             {
               Object RESULT =null;
 		
-                    System.out.println(tmp);
-                    //formatear();
-                    tmp="";
+
                 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("inicio",8, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -320,8 +353,10 @@ class CUP$parser$actions {
 		int noright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String no = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                conjuntos.add(id);
-                conjuntos.add("["+no+"]");
+                add_conjunto(no);
+                add_id_conjunto(id);
+                add_alfabeto(no);
+                //determinar_repetido(no);
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("asignacion",3, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -331,13 +366,13 @@ class CUP$parser$actions {
           case 7: // NT$0 ::= 
             {
               Object RESULT =null;
+		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 
-                iLiteral.add(isLiteral);
-                isLiteral="";
-                formatear();
-                declaraciones.clear();
-                signos.clear();
-                respuesta.clear();
+                add_id_er(id);
+                add_er(expresionR);
+                expresionR="";
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$0",9, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -349,6 +384,9 @@ class CUP$parser$actions {
               Object RESULT =null;
               // propagate RESULT from NT$0
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
+		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
+		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("expresiones",4, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -362,9 +400,7 @@ class CUP$parser$actions {
 		int combright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		String comb = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		
-                tmp +=comb;
-                isLiteral += comb;
-                signos.add(comb);
+                expresionR += comb;
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("operacion",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -378,9 +414,7 @@ class CUP$parser$actions {
 		int uniright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String uni = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-                tmp +=uni;
-                isLiteral += uni;
-                signos.add(uni);
+                expresionR += uni;
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("operacion",6, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -403,9 +437,9 @@ class CUP$parser$actions {
 		int txtright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String txt = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                tmp +=txt;
-                isLiteral += txt;
-                declaraciones.add(txt);
+                expresionR += txt;
+                //add_alfabeto(txt);
+                determinar_repetido(txt);
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("sentencia",7, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -419,9 +453,7 @@ class CUP$parser$actions {
 		int cnjright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String cnj = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-                tmp +=cnj;
-                isLiteral += cnj;
-                declaraciones.add(cnj);
+                expresionR += cnj;
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("sentencia",7, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -440,7 +472,16 @@ class CUP$parser$actions {
           case 15: // cadenas ::= IDENTIFICADOR DOSPUNTOS TEXTO PUNTOCOMA cadenas 
             {
               Object RESULT =null;
-
+		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
+		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
+		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
+		int txtleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int txtright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		String txt = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		
+                add_id_entrada(id);
+                add_entrada(txt);
+            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("cadenas",2, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

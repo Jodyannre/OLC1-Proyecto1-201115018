@@ -12,6 +12,7 @@ import nodos.Nodo;
  *
  * @author Jers_
  */
+
 public class prueba3 {
     public static ArrayList<Nodo> array = new ArrayList<>();
     public static ArrayList<Nodo> array2 = new ArrayList<>();
