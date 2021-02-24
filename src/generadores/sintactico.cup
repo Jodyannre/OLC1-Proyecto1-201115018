@@ -5,13 +5,15 @@ import java.util.ArrayList;
 /* Preliminaries to set up and use the scanner.  */
 parser code
 {:
-    public ArrayList<String> er = new ArrayList<String>();
-    public ArrayList<String> id_er = new ArrayList<String>();
-    public ArrayList<String> conjuntos = new ArrayList<String>();
-    public ArrayList<String> id_conjuntos = new ArrayList<String>(); 
-    public ArrayList<String> entradas = new ArrayList<String>();
-    public ArrayList<String> id_entradas = new ArrayList<String>();
-    public ArrayList<String> alfabeto = new ArrayList<String>();
+    public ArrayList<String> er = new ArrayList<>();
+    public ArrayList<String> id_er = new ArrayList<>();
+    public ArrayList<String> conjuntos = new ArrayList<>();
+    public ArrayList<String> id_conjuntos = new ArrayList<>(); 
+    public ArrayList<String> entradas = new ArrayList<>();
+    public ArrayList<String> id_entradas = new ArrayList<>();
+    public ArrayList<String> auxiliar;
+    public ArrayList<ArrayList<String>> alfabeto = new ArrayList<>();
+    public ArrayList<String> alfabeto_individual = new ArrayList<>();
 
     public void syntax_error(Symbol s){
         System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
@@ -39,11 +41,25 @@ parser code
     public ArrayList<String> get_id_entradas(){
         return id_entradas;
     }    
-    public ArrayList<String> get_alfabeto(){
+    public ArrayList<ArrayList<String>> get_alfabeto(){
         return alfabeto;
     }   
 
+    public void add_alfabeto_individual(String texto){
+        if (texto.contains("{")){
+            texto = texto.replaceAll("\\{","");
+            texto = texto.replaceAll("\\}","");
+        }   
+        if (!alfabeto_individual.contains(texto)){
+            alfabeto_individual.add(texto);
+        }     
+    }
 
+    public void add_alfabeto(ArrayList<String> texto){
+        auxiliar = new ArrayList<>();
+        auxiliar = (ArrayList<String>)texto.clone();
+        alfabeto.add(auxiliar);  
+    }
 :}
 
 action code
@@ -68,12 +84,9 @@ action code
     public void add_id_entrada(String texto){
         id_entradas.add(texto);
     }
-    public void add_alfabeto(String texto){
-        if (!alfabeto.contains(texto)){
-            alfabeto.add(texto);
-        }     
-    }
-    
+
+
+    /*
     public void determinar_repetido(String texto){
         boolean enConj = false;
         boolean may=false,min=false,dig=false,ascii=false;
@@ -127,13 +140,14 @@ action code
             add_alfabeto(texto);
         }
     }
+    */
 
 :}
 
 
 /* Terminals (tokens returned by the scanner). */
 terminal String IDENTIFICADOR,CONJUNTO,DOSPUNTOS,SIGNO_APERTURA,SIGNO_CIERRE,SIGNO_ASIGNACION,PUNTOCOMA,COMENTARIO;
-terminal String SEPARACION,SIGNO_UNI, SIGNO_COMB, TEXTO, NOTACION, CONJ;
+terminal String SEPARACION,SIGNO_UNI, SIGNO_COMB, TEXTO, NOTACION, CONJ, COM_LINEA;
 
 /* Non-terminals */
 nonterminal sentencias, asignaciones, cadenas, asignacion, expresiones, seccion, operacion, sentencia;
@@ -153,8 +167,9 @@ sentencias ::= asignaciones cadenas
 ;
 
 asignaciones ::= asignacion asignaciones
-    //|COMENTARIO asignaciones
     |expresiones asignaciones
+    |COM_LINEA asignaciones
+    |COMENTARIO asignaciones
     |seccion
 ;
 
@@ -162,7 +177,7 @@ asignacion ::= CONJ DOSPUNTOS IDENTIFICADOR:id SIGNO_ASIGNACION NOTACION:no PUNT
             {:
                 add_conjunto(no);
                 add_id_conjunto(id);
-                add_alfabeto(no);
+                //add_alfabeto(no);
                 //determinar_repetido(no);
             :}
 ;
@@ -174,7 +189,10 @@ expresiones ::= IDENTIFICADOR:id SIGNO_ASIGNACION operacion
                 expresionR="";
             :}
             PUNTOCOMA
-
+            {:
+                add_alfabeto(alfabeto_individual);
+                alfabeto_individual.clear();
+            :}
 ;
 
 operacion ::= SIGNO_COMB:comb operacion operacion
@@ -192,11 +210,12 @@ operacion ::= SIGNO_COMB:comb operacion operacion
 sentencia ::= TEXTO:txt
             {:
                 expresionR += txt;
-                //add_alfabeto(txt);
-                determinar_repetido(txt);
+                add_alfabeto_individual(txt);
+                //determinar_repetido(txt);
             :}
     |CONJUNTO:cnj
             {:
+                add_alfabeto_individual(cnj);
                 expresionR += cnj;
             :}
 ;
@@ -210,5 +229,6 @@ cadenas ::= IDENTIFICADOR:id DOSPUNTOS TEXTO:txt PUNTOCOMA cadenas
                 add_entrada(txt);
             :}
     |SIGNO_CIERRE
+    |COM_LINEA cadenas
 
 ;

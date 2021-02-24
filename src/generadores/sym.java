@@ -8,6 +8,7 @@ package generadores;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
+  public static final int COM_LINEA = 16;
   public static final int SIGNO_COMB = 12;
   public static final int TEXTO = 13;
   public static final int SIGNO_APERTURA = 5;
@@ -40,7 +41,8 @@ public class sym {
   "SIGNO_COMB",
   "TEXTO",
   "NOTACION",
-  "CONJ"
+  "CONJ",
+  "COM_LINEA"
   };
 }
 

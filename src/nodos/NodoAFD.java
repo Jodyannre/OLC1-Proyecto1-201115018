@@ -23,6 +23,11 @@ public class NodoAFD {
         this.transiciones = new ArrayList<>();
     }
 
+    
+    public void add_transicion(String dato, NodoAFD destino){
+        Transicion transicion = new Transicion(dato,destino);
+        this.transiciones.add(transicion);
+    }
     /**
      * @return the nombre
      */

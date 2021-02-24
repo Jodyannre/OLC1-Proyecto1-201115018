@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * @author Jers_
  */
 public class prueba2 {
-    public static void main(String[] args) throws IOException {  
+    public static void main(String[] args) throws IOException {       
         String entrada = leerArchivo();
         scanner scan = new scanner(new BufferedReader( new StringReader(entrada)));
         parser parser = new parser(scan);
@@ -48,11 +48,20 @@ public class prueba2 {
         //String instruccion = "{digito}\".\"{digito}+..";
         //String instruccion = "\"a\"\"a\"\"b\"|*\"b\"..";
         String instruccion = "\"a\"\"b\"|*\"a\".\"b\".\"b\".";
-
+        ArrayList<ArrayList<String>> alf = new ArrayList<>();
+        alf  = parser.get_alfabeto();
+        for (ArrayList<String>a:alf){
+            for (String b:a){
+                System.out.println(b);
+            }
+        }
+        /*
         Arbol arbol = au.crearEstados(instruccion);
-        arbol.calculos();
+        arbol.setAlfabeto(alf);
+        arbol.calculos();     
         arbol.pintar();
         System.out.println(parser.get_alfabeto());
+*/
     } 
     
     public static String leerArchivo() throws FileNotFoundException, IOException {

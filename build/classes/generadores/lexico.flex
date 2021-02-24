@@ -12,7 +12,7 @@ import java_cup.runtime.*;
 
 %{
   String texto = "";
-  //StringBuffer string = new StringBuffer();
+  StringBuffer string = new StringBuffer();
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline, yycolumn, yychar);
@@ -32,7 +32,7 @@ import java_cup.runtime.*;
 %column
 %full
 %state COMENTARIOS
-
+%state STRING
 
 /*Principales*/
 
@@ -75,7 +75,6 @@ NOTACION_NUMERO_COMB = {DIGITO}{COMA}{DIGITO}({COMA}{DIGITO})
 NOTACION_ASCII_COMB = {ASCII}{SIGNO_RANGO}{ASCII}
 NOTACION = {NOTACION_LETRA_MA}|{NOTACION_LETRA_MI}|{NOTACION_LETRA_COMB}|{NOTACION_NUMERO}|{NOTACION_NUMERO_COMB}|{NOTACION_ASCII_COMB}
 
-
 %%
 
 
@@ -101,6 +100,13 @@ NOTACION = {NOTACION_LETRA_MA}|{NOTACION_LETRA_MI}|{NOTACION_LETRA_COMB}|{NOTACI
   {ESPACIO} {}
    .                             {return new Symbol(sym.error, yyline, yycolumn, yytext());}  
 }
+
+    <STRING> {
+      \/\/                           { yybegin(YYINITIAL);
+                                       return symbol(sym.COM_LINEA,
+                                       string.toString()); }
+      [^\n]+                   { string.append( yytext() ); }
+    }
 
 /* error fallback */
 [^]                              { throw new Error("Illegal character <"+

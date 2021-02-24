@@ -32,4 +32,17 @@ public class Afd {
     public void setEstado_inicial(NodoAFD estado_inicial) {
         this.estado_inicial = estado_inicial;
     }
+    
+    public void add_estado(NodoAFD nodo){
+        this.estados.add(nodo);
+    }
+    
+    public NodoAFD buscar_estado(String nombre){
+        for (NodoAFD n:this.estados){
+            if (n.getNombre().equals(nombre)){
+                return n;
+            }
+        }
+        return null;
+    }
 }
