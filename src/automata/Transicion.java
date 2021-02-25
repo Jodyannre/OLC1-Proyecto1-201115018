@@ -12,11 +12,13 @@ import nodos.NodoAFD;
  * @author Jers_
  */
 public class Transicion {
+    private String simbolos_mostrar;
     private String simbolos;
     private NodoAFD destino;
-    public Transicion(String s, NodoAFD d){
+    public Transicion(String s, NodoAFD d, String sm){
         this.simbolos = s;
         this.destino = d;
+        this.simbolos_mostrar = sm;
     }
 
     /**
@@ -45,5 +47,19 @@ public class Transicion {
      */
     public void setDestino(NodoAFD destino) {
         this.destino = destino;
+    }
+
+    /**
+     * @return the simbolos_evaluar
+     */
+    public String getSimbolos_mostrar() {
+        return simbolos_mostrar;
+    }
+
+    /**
+     * @param simbolos_evaluar the simbolos_evaluar to set
+     */
+    public void setSimbolos_mostrar(String simbolos_mostrar) {
+        this.simbolos_mostrar = simbolos_mostrar;
     }
 }

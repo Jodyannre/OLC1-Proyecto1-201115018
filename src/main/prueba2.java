@@ -23,22 +23,27 @@ import java.util.ArrayList;
  */
 public class prueba2 {
     public static void main(String[] args) throws IOException {       
+        ArrayList<String>conjuntos;
+        ArrayList<String>id_conjuntos;
+        ArrayList<String>er;
+        ArrayList<String>id_er; 
+        ArrayList<ArrayList<String>> alfabetos;
+        ArrayList<String>entradas;
+        ArrayList<String>id_entradas;
+        Afnd afnd;
+        Arbol arbol;
         String entrada = leerArchivo();
         scanner scan = new scanner(new BufferedReader( new StringReader(entrada)));
         parser parser = new parser(scan);
         try {
             System.out.println("Inicia el analisis...\n");
             parser.parse();
-            ArrayList<String>er = parser.getER();
-            ArrayList<String>id_er = parser.get_Id_ER();
             System.out.println("Finaliza el analisis...");
-            System.out.println(er);
-            System.out.println(id_er);
             System.out.println("Ya se imprimió");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        Afnd au = new Afnd();
+        
         //String instruccion = "((([0~9]+).\".\").[0~9])";
         //String instruccion = "(([0~9]|\"k\")|[a-b])";
         //String instruccion = "(((\"a\"*)|\"b\"*))";
@@ -47,14 +52,38 @@ public class prueba2 {
         //String instruccion = "{letra}\"_\"{letra}{digito}||*.";
         //String instruccion = "{digito}\".\"{digito}+..";
         //String instruccion = "\"a\"\"a\"\"b\"|*\"b\"..";
-        String instruccion = "\"a\"\"b\"|*\"a\".\"b\".\"b\".";
-        ArrayList<ArrayList<String>> alf = new ArrayList<>();
-        alf  = parser.get_alfabeto();
-        for (ArrayList<String>a:alf){
-            for (String b:a){
-                System.out.println(b);
-            }
+        //String instruccion = "\"a\"\"b\"|*\"a\".\"b\".\"b\".";
+        conjuntos = parser.getConjuntos();
+        id_conjuntos = parser.get_id_conjuntos();
+        er = parser.getER();
+        id_er = parser.get_Id_ER();
+        alfabetos  = parser.get_alfabeto();
+        entradas = parser.getEntradas();
+        id_entradas = parser.get_id_entradas()
+                //Árbol creado e impreso, AFD creado e impreso, AFND creado e impreso, toca crear método para validación de cadenas
+        
+        for (int i=0;i<er.size();i++){
+            //Crear AFND
+            afnd = new Afnd();
+            //Crear árbol y obtenerlo junto con el AFND
+            arbol = afnd.crearEstados(er.get(i));
+            arbol.setAlfabeto(alfabetos.get(i));
+            arbol.setConjuntos(conjuntos);
+            arbol.setId_conjuntos(id_conjuntos);
+            afnd.pintar();
+            arbol.calculos();
+            //Crear cada árbol de cada ER                
         }
+
+     
+       
+        
+        
+        
+        
+        
+        
+
         /*
         Arbol arbol = au.crearEstados(instruccion);
         arbol.setAlfabeto(alf);

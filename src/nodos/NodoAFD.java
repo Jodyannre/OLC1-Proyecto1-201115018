@@ -24,8 +24,8 @@ public class NodoAFD {
     }
 
     
-    public void add_transicion(String dato, NodoAFD destino){
-        Transicion transicion = new Transicion(dato,destino);
+    public void add_transicion(String dato, NodoAFD destino, String sm){
+        Transicion transicion = new Transicion(dato,destino,sm);
         this.transiciones.add(transicion);
     }
     /**

@@ -45,4 +45,38 @@ public class Afd {
         }
         return null;
     }
+    
+    public void pintar(){
+        String linea = "digraph finite_state_machine {\n" 
+        + "rankdir=LR;\n" 
+        + "size=\"8,5\"\n"
+        + "node [shape = point ]; qi\n";        
+        StringBuilder sb = new StringBuilder();
+        sb.append(linea);
+        linea = "node [shape = circle];\n";
+        sb.append(linea);
+        linea = "qi -> "+this.getEstado_inicial().getNombre()+";\n";
+        sb.append(linea);
+        
+        //Comienza el recorrido de los estados
+        for (NodoAFD nodo:this.estados){
+            
+            for (Transicion transicion:nodo.getTransiciones()){
+                if (transicion.getDestino().isEstado_final()){
+                    linea = "node [shape = doublecircle];"+ transicion.getDestino().getNombre()+";\n";
+                    if (sb.indexOf(linea)<0){
+                        sb.append(linea);
+                        linea = "node [shape = circle];\n";
+                    }                                     
+                }
+                linea = nodo.getNombre()+" -> "+transicion.getDestino().getNombre()+" [ label = \""+transicion.getSimbolos_mostrar()+"\" ] ;\n";
+                sb.append(linea);
+            }
+            
+        }
+        sb.append("}");
+        linea = sb.toString();
+        System.out.println(linea);
+    }
+    
 }

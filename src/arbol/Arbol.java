@@ -22,6 +22,8 @@ public class Arbol {
     private ArrayList<String>alfabeto;
     private ArrayList<NodoArbol> tablaHojas;
     private ArrayList<Estado> tabla_estados;
+    private ArrayList<String>conjuntos;
+    private ArrayList<String>id_conjuntos;
     private int nombres_estados[];
     private Afd afd;
     public Arbol(){
@@ -58,10 +60,10 @@ public class Arbol {
         recorrer(actual.getIzquierda(),sb);
         recorrer(actual.getDerecha(),sb);
         if (actual.getTipo()!=Type.TEXTO){
-            tmp = "n"+actual.getNumero()+ "[shape=Mrecord label=\"{Anulable: "+actual.isAnulable()+"|Primeros: "+getListaPrimeros(actual)
+            tmp = "n"+actual.getNumero()+ "[shape=Mrecord label=\"{Elemento: "+formatearElemento(actual.getDato())+"|Anulable: "+actual.isAnulable()+"|Primeros: "+getListaPrimeros(actual)
             +"|Últimos: "+getListaUltimos(actual)+"}\"];"+"\n";
         }else{
-            tmp = "n"+actual.getNumero()+ "[shape=Mrecord label=\"{Id: "+actual.getNumero()+"|Anulable: "+actual.isAnulable()+"|Primeros: "+getListaPrimeros(actual)
+            tmp = "n"+actual.getNumero()+ "[shape=Mrecord label=\"{Elemento: "+formatearElemento(actual.getDato())+"|Id: "+actual.getNumero()+"|Anulable: "+actual.isAnulable()+"|Primeros: "+getListaPrimeros(actual)
             +"|Últimos: "+getListaUltimos(actual)+"}\"];"+"\n";
         }
         
@@ -75,6 +77,19 @@ public class Arbol {
             sb.append(tmp);
         }
         return actual;
+    }
+    
+    private String formatearElemento(String elemento){
+        if (elemento.contains("{")&& elemento.contains("}")){
+            elemento = elemento.replaceAll("\\{", "").replaceAll("\\}", "").replaceAll("\"", "");
+        }
+        else if (elemento.contains("\"")){
+            elemento = elemento.replaceAll("\"", "");
+            elemento = "\\"+"\""+elemento+"\\"+"\"";
+        }else if (elemento.contains("|")){
+            elemento = elemento.replaceAll("\\|", "\\"+"\\|");
+        }
+        return elemento;
     }
     
 
@@ -98,7 +113,20 @@ public class Arbol {
     public NodoArbol getUltimo() {
         return ultimo;
     }
+    
+    private String formatearConjunto(String conj){
+        int posicion = this.id_conjuntos.indexOf(conj);    
+        return this.conjuntos.get(posicion);
+    }
 
+    private String formatearAlfabeto(ArrayList<String>alfabeto){
+        String elemento = "";
+        int pos=0;
+        for (String s:alfabeto){
+            System.out.println(s);
+        }
+        return null;
+    }
     /**
      * @param ultimo the ultimo to set
      */
@@ -123,92 +151,130 @@ public class Arbol {
     
     
     public void calculos(){
+        String elemento;
         this.nombrarHojas(this.getRaiz());
         this.calculoAPU(this.getRaiz());
         this.calculoSiguientes(this.getRaiz());   
-        this.calculoEstados();
+        this.pintar();
+        elemento = this.calculoEstados();
+        if (!elemento.equals("")){
+            System.out.println("El conjunto: "+elemento+" no existe. No se puede crear el AFD");
+            return;
+        }
+        this.afd.pintar();
     }
     
     
     
-    public void calculoEstados(){
+    public String calculoEstados(){
+        //formatearAlfabeto(this.alfabeto);
         NodoAFD nafd;
         boolean todosMarcados = false;
+        boolean esConjunto = false;
         Estado auxiliar;
         //Agregar primer estado
         ArrayList<Integer> direcciones = (ArrayList<Integer>)this.raiz.getPrimeraPos().clone();
         ArrayList<Integer> siguientes = new ArrayList<>();
         //Creo nombre de estado
-        String nombre = "S"+this.contadorEstados;
+        String nombre = "S"+this.getContadorEstados();
         //Actualizar contador para nombres de estado
-        this.contadorEstados++;
+        this.setContadorEstados(this.getContadorEstados() + 1);
         //Crear el estado
         Estado actual = new Estado(nombre,direcciones);
         //Agregar el estado a la tabla de estados
-        this.tabla_estados.add(actual);
+        this.getTabla_estados().add(actual);
         //Crear AFD y primer nodo
         //Afd afd = new Afd();
         //Crear el nodo correspondiente al estado inicial
         NodoAFD actual_afd = new NodoAFD(nombre,true,false);
         //Agregar estado al afd
-        afd.add_estado(actual_afd);
+        getAfd().add_estado(actual_afd);
+        //Configurar estado inicial del afd
+        getAfd().setEstado_inicial(actual_afd);
         //Reiniciar variable de direcciones
         direcciones.clear();
         
-        while (true){
-            //Recorrer el alfabeto buscando nuevos estados y transiciones
-            Estado estado = this.tabla_estados.get(0);
-            do{
-                for (String elemento:this.alfabeto){
-                    for (int i: estado.getEstados()){
-                        if (loContiene(this.tablaHojas.get(i-1).getDato(),elemento)){
-                            direcciones.add(i);
-                        }
-                    }
-                    this.agregarSiguientes(siguientes, direcciones);
-                    //Direcciones construido
-                    if (!this.existe(siguientes) && !siguientes.isEmpty()){
-                        nombre = "S"+this.contadorEstados;
-                        this.contadorEstados++;
-                        actual = new Estado(nombre,siguientes);
-                        this.tabla_estados.add(actual);
-                        nafd = new NodoAFD(nombre,false,false);
-                        afd.add_estado(nafd);
-                        actual_afd.add_transicion(elemento, nafd);
+        //Recorrer el alfabeto buscando nuevos estados y transiciones
+        Estado estado = this.getTabla_estados().get(0);
+        do{
+            for (String elemento:this.alfabeto){
+                if (elemento.contains("{") && elemento.contains("}")){
+                    if (!this.conjuntoExiste(elemento.replaceAll("\\{","").replaceAll("\\}", ""))){
+                        return elemento;
                     }else{
-                        //Si ya existe entonces solo lo enlazamos
-                        auxiliar = this.buscar_estado(siguientes);
-                        if (auxiliar!= null){
-                            nafd = afd.buscar_estado(auxiliar.getNombre());
-                            actual_afd.add_transicion(elemento, nafd);                            
-                        }
+                        esConjunto = true;
+                    }
+                }else{
+                    elemento = elemento.substring(1, elemento.length()-1);
+                }      
 
-                    }    
-                    siguientes.clear();
-                    direcciones.clear();
-                }
-                //El estado ya esta marcado
-                estado.setMarcado(true);
-                //Revisar si hay estados sin marcar
-                for (Estado estad:this.tabla_estados){
-                    if (!estad.isMarcado()){
-                        actual = estad; 
-                        actual_afd = afd.buscar_estado(estad.getNombre());
-                        break;
+                for (int i: estado.getEstados()){
+                    if (loContiene(this.getTablaHojas().get(i-1).getDato(),elemento)){
+                        direcciones.add(i);
                     }
                 }
-                if (actual.isMarcado()){
-                    todosMarcados = true;
-                }
-                else{
-                    estado = actual;
-                    siguientes.clear();
-                    direcciones.clear();
-                }
-            }while(!todosMarcados);
+                this.agregarSiguientes(siguientes, direcciones);
+                //Direcciones construido
+                if (!this.existe(siguientes) && !siguientes.isEmpty()){
+                    nombre = "S"+this.getContadorEstados();
+                    this.setContadorEstados(this.getContadorEstados() + 1);
+                    actual = new Estado(nombre,siguientes);
+                    this.getTabla_estados().add(actual);
+                    nafd = new NodoAFD(nombre,false,false);
+                    getAfd().add_estado(nafd);
+                    //Verificar si es estado de aceptación
+                    if (siguientes.contains(this.tablaHojas.get(this.tablaHojas.size()-1).getNumero())){
+                        nafd.setEstado_final(true);
+                    }                    
+                    if (esConjunto){
+                        elemento = elemento.replaceAll("\\{", "").replaceAll("\\}", "");
+                        actual_afd.add_transicion(this.formatearConjunto(elemento), nafd,elemento);
+                    }else{
+                        actual_afd.add_transicion(elemento, nafd,elemento);
+                    }
+                    
+                }else{
+                    //Si ya existe entonces solo lo enlazamos
+                    auxiliar = this.buscar_estado(siguientes);
+                    if (auxiliar!= null){
+                        nafd = getAfd().buscar_estado(auxiliar.getNombre());
+                        if (esConjunto){
+                            elemento = elemento.replaceAll("\\{", "").replaceAll("\\}", "");
+                            actual_afd.add_transicion(this.formatearConjunto(elemento), nafd,elemento);
+                        }else{
+                            actual_afd.add_transicion(elemento, nafd,elemento);
+                        }                            
+                    }
 
-        }
-        
+                }    
+                siguientes.clear();
+                direcciones.clear();
+                esConjunto = false;
+            }
+            //El estado ya esta marcado
+            estado.setMarcado(true);
+            //Revisar si hay estados sin marcar
+            for (Estado estad:this.getTabla_estados()){
+                if (!estad.isMarcado()){
+                    actual = estad; 
+                    actual_afd = getAfd().buscar_estado(estad.getNombre());
+                    break;
+                }
+            }
+            if (actual.isMarcado()){
+                todosMarcados = true;
+            }
+            else{
+                estado = actual;
+                siguientes.clear();
+                direcciones.clear();
+            }
+        }while(!todosMarcados);
+        return "";
+    }
+    
+    private boolean conjuntoExiste(String conj){
+        return this.id_conjuntos.contains(conj);
     }
     
     public NodoArbol calculoSiguientes(NodoArbol actual){
@@ -230,37 +296,37 @@ public class Arbol {
     private void asignarSiguientes(ArrayList<Integer>nodos,ArrayList<Integer>siguientes){
         for (int actual:nodos){
             for (int sig:siguientes){
-                this.tablaHojas.get(actual-1).addSiguiente(sig);
+                this.getTablaHojas().get(actual-1).addSiguiente(sig);
             }
         }
     }
     
     private String asignarNombreEstado(){
         String nombre = "";
-        if (this.nombres_estados[0]==0){ //Mientras no este en Z
-            if (this.nombres_estados[1]!=91){ //Quiere decir que ya llego a Z
-                nombre = Character.toString((char) this.nombres_estados[1]);;
-                this.nombres_estados[1]=this.nombres_estados[1]+1;
+        if (this.getNombres_estados()[0]==0){ //Mientras no este en Z
+            if (this.getNombres_estados()[1]!=91){ //Quiere decir que ya llego a Z
+                nombre = Character.toString((char) this.getNombres_estados()[1]);;
+                this.getNombres_estados()[1]=this.getNombres_estados()[1]+1;
                 return nombre;
             }else{
                 //Iniciando segunda columna
-                this.nombres_estados[0]=65;
-                this.nombres_estados[1]=65;
-                nombre = Character.toString((char) this.nombres_estados[0])+Character.toString((char) this.nombres_estados[1]);
-                this.nombres_estados[1]=this.nombres_estados[1]+1;
+                this.getNombres_estados()[0]=65;
+                this.getNombres_estados()[1]=65;
+                nombre = Character.toString((char) this.getNombres_estados()[0])+Character.toString((char) this.getNombres_estados()[1]);
+                this.getNombres_estados()[1]=this.getNombres_estados()[1]+1;
                 return nombre;
             }
             
         }else{//Ya van nombres en de 2 columnas
-            if (this.nombres_estados[1]!=91){
-                nombre = Character.toString((char) this.nombres_estados[0])+Character.toString((char) this.nombres_estados[1]);
-                this.nombres_estados[1]=this.nombres_estados[1]+1;
+            if (this.getNombres_estados()[1]!=91){
+                nombre = Character.toString((char) this.getNombres_estados()[0])+Character.toString((char) this.getNombres_estados()[1]);
+                this.getNombres_estados()[1]=this.getNombres_estados()[1]+1;
                 return nombre;
             }else{
-                this.nombres_estados[0]=this.nombres_estados[0]+1;
-                this.nombres_estados[1]=65;  
-                nombre = Character.toString((char) this.nombres_estados[0])+Character.toString((char) this.nombres_estados[1]);
-                this.nombres_estados[1]=this.nombres_estados[1]+1;
+                this.getNombres_estados()[0]=this.getNombres_estados()[0]+1;
+                this.getNombres_estados()[1]=65;  
+                nombre = Character.toString((char) this.getNombres_estados()[0])+Character.toString((char) this.getNombres_estados()[1]);
+                this.getNombres_estados()[1]=this.getNombres_estados()[1]+1;
                 return nombre;
             }
         }
@@ -273,9 +339,10 @@ public class Arbol {
         nombrarHojas(actual.getIzquierda());
         nombrarHojas(actual.getDerecha());
         if (actual.getTipo()==Type.TEXTO){
-            actual.setNumero(this.contadorHojas);
-            this.contadorHojas++;
-            this.tablaHojas.add(actual);
+            actual.setNumero(this.getContadorHojas());
+            actual.setDato(actual.getDato().replaceAll("\\\"",""));
+            this.setContadorHojas(this.getContadorHojas() + 1);
+            this.getTablaHojas().add(actual);
         }
         return actual;
     }
@@ -403,7 +470,7 @@ public class Arbol {
     }
     
     private boolean existe(ArrayList<Integer>actual){
-        for (Estado estado:tabla_estados){
+        for (Estado estado:getTabla_estados()){
             if (estado.existe(actual)){
                 return true;
             }
@@ -413,7 +480,7 @@ public class Arbol {
     
     private Estado buscar_estado(ArrayList<Integer>actual){
         boolean encontrado = true;
-        for (Estado estado:this.tabla_estados){
+        for (Estado estado:this.getTabla_estados()){
             if (estado.getEstados().size() == actual.size()){
                 for (int i:actual){
                     if (!estado.getEstados().contains(i)){
@@ -466,10 +533,122 @@ public class Arbol {
     
     public void agregarSiguientes(ArrayList<Integer>siguientes,ArrayList<Integer>direcciones){
         for(int i: direcciones){
-            for (int j: this.tablaHojas.get(i-1).getSiguientes()){
+            for (int j: this.getTablaHojas().get(i-1).getSiguientes()){
                 if (!siguientes.contains(j)){siguientes.add(j);}              
             }
         }
+    }
+
+    /**
+     * @return the contadorHojas
+     */
+    public int getContadorHojas() {
+        return contadorHojas;
+    }
+
+    /**
+     * @param contadorHojas the contadorHojas to set
+     */
+    public void setContadorHojas(int contadorHojas) {
+        this.contadorHojas = contadorHojas;
+    }
+
+    /**
+     * @return the contadorEstados
+     */
+    public int getContadorEstados() {
+        return contadorEstados;
+    }
+
+    /**
+     * @param contadorEstados the contadorEstados to set
+     */
+    public void setContadorEstados(int contadorEstados) {
+        this.contadorEstados = contadorEstados;
+    }
+
+    /**
+     * @return the tablaHojas
+     */
+    public ArrayList<NodoArbol> getTablaHojas() {
+        return tablaHojas;
+    }
+
+    /**
+     * @param tablaHojas the tablaHojas to set
+     */
+    public void setTablaHojas(ArrayList<NodoArbol> tablaHojas) {
+        this.tablaHojas = tablaHojas;
+    }
+
+    /**
+     * @return the tabla_estados
+     */
+    public ArrayList<Estado> getTabla_estados() {
+        return tabla_estados;
+    }
+
+    /**
+     * @param tabla_estados the tabla_estados to set
+     */
+    public void setTabla_estados(ArrayList<Estado> tabla_estados) {
+        this.tabla_estados = tabla_estados;
+    }
+
+    /**
+     * @return the conjuntos
+     */
+    public ArrayList<String> getConjuntos() {
+        return conjuntos;
+    }
+
+    /**
+     * @param conjuntos the conjuntos to set
+     */
+    public void setConjuntos(ArrayList<String> conjuntos) {
+        this.conjuntos = conjuntos;
+    }
+
+    /**
+     * @return the id_conjuntos
+     */
+    public ArrayList<String> getId_conjuntos() {
+        return id_conjuntos;
+    }
+
+    /**
+     * @param id_conjuntos the id_conjuntos to set
+     */
+    public void setId_conjuntos(ArrayList<String> id_conjuntos) {
+        this.id_conjuntos = id_conjuntos;
+    }
+
+    /**
+     * @return the nombres_estados
+     */
+    public int[] getNombres_estados() {
+        return nombres_estados;
+    }
+
+    /**
+     * @param nombres_estados the nombres_estados to set
+     */
+    public void setNombres_estados(int[] nombres_estados) {
+        this.nombres_estados = nombres_estados;
+    }
+
+    /**
+     * @return the afd
+     */
+    public Afd getAfd() {
+        return afd;
+    }
+
+    /**
+     * @param afd the afd to set
+     */
+    public void setAfd(Afd afd) {
+        this.afd = afd;
     }
  
     

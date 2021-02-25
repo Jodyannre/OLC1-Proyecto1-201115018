@@ -185,10 +185,12 @@ public class parser extends java_cup.runtime.lr_parser {
     }   
 
     public void add_alfabeto_individual(String texto){
+/*
         if (texto.contains("{")){
             texto = texto.replaceAll("\\{","");
             texto = texto.replaceAll("\\}","");
         }   
+*/
         if (!alfabeto_individual.contains(texto)){
             alfabeto_individual.add(texto);
         }     
