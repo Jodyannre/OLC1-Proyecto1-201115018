@@ -32,6 +32,9 @@ public class prueba2 {
         ArrayList<String>id_entradas;
         Afnd afnd;
         Arbol arbol;
+        int contadorCadenaEvaluada = 0;
+        String cadenaEvaluar;
+        boolean resultado;
         String entrada = leerArchivo();
         scanner scan = new scanner(new BufferedReader( new StringReader(entrada)));
         parser parser = new parser(scan);
@@ -59,10 +62,12 @@ public class prueba2 {
         id_er = parser.get_Id_ER();
         alfabetos  = parser.get_alfabeto();
         entradas = parser.getEntradas();
-        id_entradas = parser.get_id_entradas()
+        id_entradas = parser.get_id_entradas();
                 //Árbol creado e impreso, AFD creado e impreso, AFND creado e impreso, toca crear método para validación de cadenas
         
         for (int i=0;i<er.size();i++){
+            cadenaEvaluar = entradas.get(contadorCadenaEvaluada);
+            cadenaEvaluar = cadenaEvaluar.substring(1, cadenaEvaluar.length()-1);
             //Crear AFND
             afnd = new Afnd();
             //Crear árbol y obtenerlo junto con el AFND
@@ -72,7 +77,14 @@ public class prueba2 {
             arbol.setId_conjuntos(id_conjuntos);
             afnd.pintar();
             arbol.calculos();
-            //Crear cada árbol de cada ER                
+            resultado = arbol.getAfd().evaluar(cadenaEvaluar)
+            //AFD terminado, ya se validan cadenas y arreglado el error de las transiciones tipo cruz
+            //Toca dibujar la tabla de siguientes, transiciones
+            System.out.println("El resultado es: "+resultado);
+            System.out.println("De la cadena: "+cadenaEvaluar);
+            contadorCadenaEvaluada++;
+            //Crear cada árbol de cada ER    
+                    
         }
 
      

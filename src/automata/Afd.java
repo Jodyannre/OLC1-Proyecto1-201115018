@@ -79,4 +79,77 @@ public class Afd {
         System.out.println(linea);
     }
     
+    public boolean evaluar(String cadena){
+        NodoAFD actual = this.estado_inicial;
+        Object[]respuesta;
+        for (char caracter:cadena.toCharArray()){
+            respuesta = hayTransicion(caracter,actual.getTransiciones());
+            if ((boolean)respuesta[0]==true){
+                actual = (actual.getTransiciones().get((int)respuesta[1])).getDestino();
+            }else{
+                return false;
+            }
+            
+        }
+        return true;
+    }
+
+    public Object[]hayTransicion(char caracter,ArrayList<Transicion>transiciones){
+        String alfabeto = "";
+        int contador = 0;
+        Object respuesta[] = new Object[2];
+        for (Transicion transicion:transiciones){
+            alfabeto = transicion.getSimbolos();
+            if (alfabeto.contains("~")){
+                if (loContiene(caracter,alfabeto)){
+                    respuesta[0]=true;
+                    respuesta[1]=contador;    
+                    return respuesta;
+                }
+                
+            }else if (alfabeto.contains(",") && !alfabeto.contains("\"")){
+                if (alfabeto.indexOf(caracter)!=-1){
+                    respuesta[0]=true;
+                    respuesta[1]=contador;
+                    return respuesta;
+                }
+            }else{
+                if (alfabeto.indexOf(caracter)!=-1){
+                    respuesta[0]=true;
+                    respuesta[1]=contador;
+                    return respuesta;
+                }
+            }
+            contador++;
+        }
+        respuesta[0]=false;
+        respuesta[1]=null;
+        return respuesta;
+    }
+    
+    
+    public boolean loContiene(char nodo,String alfabeto){
+        char primero,segundo;
+        if (alfabeto.contains("~")){
+            primero = alfabeto.charAt(0);
+            segundo = alfabeto.charAt(2);
+
+            if (primero >47 && segundo<58){
+                if (nodo >=primero && nodo<=segundo){
+                    return true;
+                }
+            }else if (primero>64 && segundo<91){
+                if (nodo >=primero && nodo<=segundo){
+                    return true;
+                }
+            }else if (primero>96 && segundo<123){
+                if (nodo >=primero && nodo<=segundo){
+                    return true;
+                }
+            }                         
+        }
+        return false;
+    }
+    
+    
 }

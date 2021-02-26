@@ -289,7 +289,9 @@ public class Arbol {
         if (actual.getTipo()==Type.KLEENE){
             asignarSiguientes(actual.getUltimaPos(),actual.getPrimeraPos());
         }
-
+        if (actual.getTipo()==Type.CRUZ){
+            asignarSiguientes(actual.getUltimaPos(),actual.getPrimeraPos());
+        }
         return actual;
     }
     
@@ -300,37 +302,7 @@ public class Arbol {
             }
         }
     }
-    
-    private String asignarNombreEstado(){
-        String nombre = "";
-        if (this.getNombres_estados()[0]==0){ //Mientras no este en Z
-            if (this.getNombres_estados()[1]!=91){ //Quiere decir que ya llego a Z
-                nombre = Character.toString((char) this.getNombres_estados()[1]);;
-                this.getNombres_estados()[1]=this.getNombres_estados()[1]+1;
-                return nombre;
-            }else{
-                //Iniciando segunda columna
-                this.getNombres_estados()[0]=65;
-                this.getNombres_estados()[1]=65;
-                nombre = Character.toString((char) this.getNombres_estados()[0])+Character.toString((char) this.getNombres_estados()[1]);
-                this.getNombres_estados()[1]=this.getNombres_estados()[1]+1;
-                return nombre;
-            }
-            
-        }else{//Ya van nombres en de 2 columnas
-            if (this.getNombres_estados()[1]!=91){
-                nombre = Character.toString((char) this.getNombres_estados()[0])+Character.toString((char) this.getNombres_estados()[1]);
-                this.getNombres_estados()[1]=this.getNombres_estados()[1]+1;
-                return nombre;
-            }else{
-                this.getNombres_estados()[0]=this.getNombres_estados()[0]+1;
-                this.getNombres_estados()[1]=65;  
-                nombre = Character.toString((char) this.getNombres_estados()[0])+Character.toString((char) this.getNombres_estados()[1]);
-                this.getNombres_estados()[1]=this.getNombres_estados()[1]+1;
-                return nombre;
-            }
-        }
-    }
+   
     
     public NodoArbol nombrarHojas(NodoArbol actual){
         if (actual==null){
@@ -486,6 +458,8 @@ public class Arbol {
                     if (!estado.getEstados().contains(i)){
                         encontrado = false;
                         break;
+                    }else{
+                        encontrado = true;
                     }
                 }
                 if (encontrado){

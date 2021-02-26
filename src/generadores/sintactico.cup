@@ -225,11 +225,12 @@ sentencia ::= TEXTO:txt
 seccion ::= SEPARACION SEPARACION
 ;
 
-cadenas ::= IDENTIFICADOR:id DOSPUNTOS TEXTO:txt PUNTOCOMA cadenas
+cadenas ::= IDENTIFICADOR:id DOSPUNTOS TEXTO:txt 
             {:
                 add_id_entrada(id);
                 add_entrada(txt);
             :}
+            PUNTOCOMA cadenas
     |SIGNO_CIERRE
     |COM_LINEA cadenas
 

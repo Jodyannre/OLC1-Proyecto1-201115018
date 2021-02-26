@@ -2,8 +2,8 @@
 CONJ: letra -> a~z;
 CONJ: digito -> 0~9;
 <!sdfsdf!ssdfsdfdfsdfsdfs!>
-ExpReg1 -> . {zombie} * | "_" | {letra} {digito}; 
-ExpresionReg2 -> . {digito} . "." + {digito};
+ExpReg1 -> . {letra} * | "_" | {letra} {digito}; 
+ExpresionReg2 -> . + {digito} . "." + {digito};
 RegEx3 -> . {digito} * | "_" | {letra} {digito};
 Reg4 -> | | * "c" * "b" * "a"; 
 Reg5 -> . "a" . * | "a" "b" "b";
@@ -11,8 +11,7 @@ Reg6 -> . . . * | "a" "b" "a" "b" "b";
 %%
 %%
 
-hola : "hola";
-ExpReg1 : "primerLexemaCokoa"; 
+ExpReg1 : "primerlexemacokoa"; 
 ExpresionReg2 : "34.44";
 }
 
