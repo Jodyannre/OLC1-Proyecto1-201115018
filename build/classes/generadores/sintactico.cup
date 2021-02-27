@@ -149,7 +149,7 @@ action code
 
 /* Terminals (tokens returned by the scanner). */
 terminal String IDENTIFICADOR,CONJUNTO,DOSPUNTOS,SIGNO_APERTURA,SIGNO_CIERRE,SIGNO_ASIGNACION,PUNTOCOMA,COMENTARIO;
-terminal String SEPARACION,SIGNO_UNI, SIGNO_COMB, TEXTO, NOTACION, CONJ, COM_LINEA;
+terminal String SEPARACION,SIGNO_UNI, SIGNO_COMB, TEXTO, NOTACION, CONJ, COM_LINEA, SALTO,COMILLA,COMILLA_DOBLE;
 
 /* Non-terminals */
 nonterminal sentencias, asignaciones, cadenas, asignacion, expresiones, seccion, operacion, sentencia;
@@ -219,6 +219,21 @@ sentencia ::= TEXTO:txt
             {:
                 add_alfabeto_individual(cnj);
                 expresionR += cnj;
+            :}
+    |SALTO:sa 
+            {:
+                expresionR += sa;
+                add_alfabeto_individual(sa);             
+            :}
+    |COMILLA:co
+            {:
+                expresionR += co;
+                add_alfabeto_individual(co);             
+            :}
+    |COMILLA_DOBLE:cm
+            {:
+                expresionR += cm;
+                add_alfabeto_individual(cm);             
             :}
 ;
 

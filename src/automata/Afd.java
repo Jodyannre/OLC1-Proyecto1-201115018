@@ -7,6 +7,7 @@ package automata;
 
 import java.util.ArrayList;
 import nodos.NodoAFD;
+import nodos.Type;
 
 /**
  *
@@ -34,11 +35,11 @@ public class Afd {
     }
     
     public void add_estado(NodoAFD nodo){
-        this.estados.add(nodo);
+        this.getEstados().add(nodo);
     }
     
     public NodoAFD buscar_estado(String nombre){
-        for (NodoAFD n:this.estados){
+        for (NodoAFD n:this.getEstados()){
             if (n.getNombre().equals(nombre)){
                 return n;
             }
@@ -59,7 +60,7 @@ public class Afd {
         sb.append(linea);
         
         //Comienza el recorrido de los estados
-        for (NodoAFD nodo:this.estados){
+        for (NodoAFD nodo:this.getEstados()){
             
             for (Transicion transicion:nodo.getTransiciones()){
                 if (transicion.getDestino().isEstado_final()){
@@ -69,7 +70,13 @@ public class Afd {
                         linea = "node [shape = circle];\n";
                     }                                     
                 }
-                linea = nodo.getNombre()+" -> "+transicion.getDestino().getNombre()+" [ label = \""+transicion.getSimbolos_mostrar()+"\" ] ;\n";
+                if (transicion.getTipo()==Type.SALTO ||transicion.getTipo()==Type.COMILLA){
+                    linea = nodo.getNombre()+" -> "+transicion.getDestino().getNombre()+" [ label = \"\\"+transicion.getSimbolos_mostrar()+"\" ] ;\n";
+                }else if(transicion.getTipo()==Type.COMILLA_DOBLE){
+                    linea = nodo.getNombre()+" -> "+transicion.getDestino().getNombre()+" [ label = \"\\\\"+transicion.getSimbolos_mostrar()+"\" ] ;\n";
+                }else{
+                    linea = nodo.getNombre()+" -> "+transicion.getDestino().getNombre()+" [ label = \""+transicion.getSimbolos_mostrar()+"\" ] ;\n";
+                }
                 sb.append(linea);
             }
             
@@ -82,10 +89,11 @@ public class Afd {
     public boolean evaluar(String cadena){
         NodoAFD actual = this.estado_inicial;
         Object[]respuesta;
-        for (char caracter:cadena.toCharArray()){
-            respuesta = hayTransicion(caracter,actual.getTransiciones());
+        for (int i = 0;i<cadena.length();i++){                  
+            respuesta = hayTransicion(cadena,actual.getTransiciones(),i);
             if ((boolean)respuesta[0]==true){
                 actual = (actual.getTransiciones().get((int)respuesta[1])).getDestino();
+                i = (int)respuesta[2];
             }else{
                 return false;
             }
@@ -94,39 +102,82 @@ public class Afd {
         return true;
     }
 
-    public Object[]hayTransicion(char caracter,ArrayList<Transicion>transiciones){
+    public Object[]hayTransicion(String cadena,ArrayList<Transicion>transiciones,int posicion){
+        char caracter;
         String alfabeto = "";
         int contador = 0;
-        Object respuesta[] = new Object[2];
-        for (Transicion transicion:transiciones){
-            alfabeto = transicion.getSimbolos();
-            if (alfabeto.contains("~")){
-                if (loContiene(caracter,alfabeto)){
-                    respuesta[0]=true;
-                    respuesta[1]=contador;    
-                    return respuesta;
+        Object respuesta[] = new Object[3];
+        Object texto[]= new Object[2];
+        for (int i = posicion;i<cadena.length();i++){
+            caracter = cadena.charAt(i);
+            for (Transicion transicion:transiciones){
+                alfabeto = transicion.getSimbolos();
+                if (transicion.getTipo()==Type.CONJUNTO_SIMPLE){
+                    if (loContiene(caracter,alfabeto)){
+                        respuesta[0]=true;
+                        respuesta[1]=contador; 
+                        respuesta[2]=i;
+                        return respuesta;
+                    }
+
+                }else if (transicion.getTipo()==Type.CONJUNTO_COMBINADO){
+                    if (alfabeto.indexOf(caracter)!=-1){
+                        respuesta[0]=true;
+                        respuesta[1]=contador;
+                        respuesta[2]=i;
+                        return respuesta;
+                    }
+                }else if (transicion.getTipo()==Type.TEXTO){
+                    texto = verificarTexto(cadena,i,alfabeto);
+                    if ((boolean)texto[0]==true){
+                        respuesta[0]=true;
+                        respuesta[1]=contador;
+                        respuesta[2]=texto[1];
+                        return respuesta;
+                    }
+
+                }else if (transicion.getTipo()==Type.SALTO||transicion.getTipo()==Type.COMILLA||transicion.getTipo()==Type.COMILLA_DOBLE){
+                    texto = verificarTexto(cadena,i,alfabeto);
+                    if ((boolean)texto[0]==true){
+                        respuesta[0]=true;
+                        respuesta[1]=contador;
+                        respuesta[2]=texto[1];
+                        return respuesta;
+                    }                    
+                }              
+                else{
+                    if (alfabeto.indexOf(caracter)!=-1){
+                        respuesta[0]=true;
+                        respuesta[1]=contador;
+                        respuesta[2]=i;
+                        return respuesta;
+                    }                    
                 }
-                
-            }else if (alfabeto.contains(",") && !alfabeto.contains("\"")){
-                if (alfabeto.indexOf(caracter)!=-1){
-                    respuesta[0]=true;
-                    respuesta[1]=contador;
-                    return respuesta;
-                }
-            }else{
-                if (alfabeto.indexOf(caracter)!=-1){
-                    respuesta[0]=true;
-                    respuesta[1]=contador;
-                    return respuesta;
-                }
+                contador++;
             }
-            contador++;
+            
         }
+
         respuesta[0]=false;
         respuesta[1]=null;
         return respuesta;
-    }
+    }  
     
+    
+    public Object[] verificarTexto(String cadena,int posicion, String alfabeto){
+        Object[]respuesta = new Object[2];
+        for (int i=0;i<alfabeto.length();i++){
+            if (alfabeto.charAt(i)!=cadena.charAt(posicion)){
+                respuesta[0]=false;
+                respuesta[1]=posicion;
+                return respuesta;
+            }
+            posicion++;
+        }
+        respuesta[0]=true;
+        respuesta[1]=posicion-1;
+        return respuesta;
+    }
     
     public boolean loContiene(char nodo,String alfabeto){
         char primero,segundo;
@@ -149,6 +200,13 @@ public class Afd {
             }                         
         }
         return false;
+    }
+
+    /**
+     * @return the estados
+     */
+    public ArrayList<NodoAFD> getEstados() {
+        return estados;
     }
     
     

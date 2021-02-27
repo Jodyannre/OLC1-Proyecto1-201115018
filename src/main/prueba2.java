@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 
+
+
+
+
 /**
  *
  * @author Jers_
@@ -64,7 +68,10 @@ public class prueba2 {
         entradas = parser.getEntradas();
         id_entradas = parser.get_id_entradas();
                 //Árbol creado e impreso, AFD creado e impreso, AFND creado e impreso, toca crear método para validación de cadenas
-        
+        char e = '\\';
+        if (e == '\\'){
+            System.out.println("Si es igual");
+        }
         for (int i=0;i<er.size();i++){
             cadenaEvaluar = entradas.get(contadorCadenaEvaluada);
             cadenaEvaluar = cadenaEvaluar.substring(1, cadenaEvaluar.length()-1);
@@ -77,10 +84,14 @@ public class prueba2 {
             arbol.setId_conjuntos(id_conjuntos);
             afnd.pintar();
             arbol.calculos();
-            resultado = arbol.getAfd().evaluar(cadenaEvaluar)
+            arbol.pintarTablaTransiciones();
+            arbol.pintarTablaSiguientes();
+            resultado = arbol.getAfd().evaluar(cadenaEvaluar);
             //AFD terminado, ya se validan cadenas y arreglado el error de las transiciones tipo cruz
             //Toca dibujar la tabla de siguientes, transiciones
-            System.out.println("El resultado es: "+resultado);
+            System.out.println("El resultado es: "+resultado)
+                    //Ya están las tablas y la validación de cadenas, arreglados problemas con autómatas y árbol y los caracteres especiales
+                    //Comenzar con la interfaz gráfica y quedará pendiente para el final el trato de errores y los xml
             System.out.println("De la cadena: "+cadenaEvaluar);
             contadorCadenaEvaluada++;
             //Crear cada árbol de cada ER    

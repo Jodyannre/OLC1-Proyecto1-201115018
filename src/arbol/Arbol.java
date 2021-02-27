@@ -6,6 +6,7 @@
 package arbol;
 
 import automata.Afd;
+import automata.Transicion;
 import java.util.ArrayList;
 import nodos.NodoAFD;
 import nodos.NodoArbol;
@@ -59,9 +60,13 @@ public class Arbol {
         }
         recorrer(actual.getIzquierda(),sb);
         recorrer(actual.getDerecha(),sb);
-        if (actual.getTipo()!=Type.TEXTO){
+        if(actual.getTipo()==Type.COMILLA || actual.getTipo()==Type.COMILLA_DOBLE || actual.getTipo()==Type.SALTO){
+            tmp = "n"+actual.getNumero()+ "[shape=Mrecord label=\"{Elemento: "+'\\'+formatearElemento(actual.getDato())+"|Anulable: "+actual.isAnulable()+"|Primeros: "+getListaPrimeros(actual)
+            +"|Últimos: "+getListaUltimos(actual)+"}\"];"+"\n";
+        }else if (actual.getTipo()!=Type.TEXTO){
             tmp = "n"+actual.getNumero()+ "[shape=Mrecord label=\"{Elemento: "+formatearElemento(actual.getDato())+"|Anulable: "+actual.isAnulable()+"|Primeros: "+getListaPrimeros(actual)
             +"|Últimos: "+getListaUltimos(actual)+"}\"];"+"\n";
+
         }else{
             tmp = "n"+actual.getNumero()+ "[shape=Mrecord label=\"{Elemento: "+formatearElemento(actual.getDato())+"|Id: "+actual.getNumero()+"|Anulable: "+actual.isAnulable()+"|Primeros: "+getListaPrimeros(actual)
             +"|Últimos: "+getListaUltimos(actual)+"}\"];"+"\n";
@@ -82,6 +87,9 @@ public class Arbol {
     private String formatearElemento(String elemento){
         if (elemento.contains("{")&& elemento.contains("}")){
             elemento = elemento.replaceAll("\\{", "").replaceAll("\\}", "").replaceAll("\"", "");
+        }
+        else if (elemento.contains("\\\"") && elemento.length()<3){
+            elemento = "\\"+elemento;
         }
         else if (elemento.contains("\"")){
             elemento = elemento.replaceAll("\"", "");
@@ -205,7 +213,9 @@ public class Arbol {
                         esConjunto = true;
                     }
                 }else{
-                    elemento = elemento.substring(1, elemento.length()-1);
+                    if (elemento.length()>2){
+                        elemento = elemento.substring(1, elemento.length()-1);
+                    }                  
                 }      
 
                 for (int i: estado.getEstados()){
@@ -295,6 +305,102 @@ public class Arbol {
         return actual;
     }
     
+    public void pintarTablaTransiciones(){
+        StringBuilder sb = new StringBuilder();
+        boolean encontrado = false;
+        String txt = "set0 [label = \"{Estado";      
+        String inicio = "digraph G  {\n" +
+        "node [shape=record, fontname=\"Arial\"];\n";
+        sb.append(inicio);
+        sb.append(txt);
+        for(NodoAFD nodo:this.getAfd().getEstados()){
+            sb.append("|");
+            sb.append(nodo.getNombre());           
+        }
+        for (String alfabeto:this.getAlfabeto()){
+            txt = "}|{";
+            sb.append(txt); 
+            if (alfabeto.equals("\\n")||alfabeto.equals("\\\'")){
+                txt = "\\"+alfabeto;
+                sb.append(txt);
+            }else if (alfabeto.equals("\\\"")){
+                txt = "\\\\"+alfabeto;
+                sb.append(txt);                
+            }else if (alfabeto.contains("\"")){
+                alfabeto = alfabeto.substring(1, alfabeto.length()-1);
+                sb.append(alfabeto);
+            }else{
+                sb.append(alfabeto);
+            }
+            
+            for(NodoAFD nodo:this.getAfd().getEstados()){
+                for (Transicion transicion:nodo.getTransiciones()){
+                    if (transicion.getSimbolos().equals(alfabeto)){
+                        sb.append("|");
+                        sb.append(transicion.getDestino().getNombre());  
+                        encontrado = true;
+                        break;
+                    }                
+                }  
+                if (!encontrado){
+                    sb.append("|");
+                    sb.append("-");
+                }
+                encontrado = false;
+            }
+           
+        }
+        sb.append("}\"];\n");
+        sb.append("}");
+        txt = sb.toString();
+        System.out.println(txt);
+        
+    }
+    
+    public void pintarTablaSiguientes(){
+        StringBuilder sb = new StringBuilder();
+        boolean encontrado = false;
+        String txt = "set0 [label = \"{Hojas";      
+        String inicio = "digraph G  {\n" +
+        "node [shape=record, fontname=\"Arial\"];\n";
+        sb.append(inicio);
+        sb.append(txt);
+        for(NodoArbol nodo:this.getTablaHojas()){
+            sb.append("|");
+            if (nodo.getDato().equals("\\n")||nodo.getDato().equals("\\\'")){
+                txt = "\\"+nodo.getDato();
+                sb.append(txt);
+            }else if (nodo.getDato().equals("\\\"")){
+                txt = "\\\\"+nodo.getDato();
+                sb.append(txt);                
+            }else if (nodo.getDato().contains("\"")){
+                txt = nodo.getDato().substring(1, nodo.getDato().length()-1);
+                sb.append(txt);
+            }else{
+                sb.append(nodo.getDato());
+            }
+            //sb.append(nodo.getDato());
+        }
+        txt = "}|{";
+        sb.append(txt);
+        sb.append("Número");
+        for(NodoArbol nodo:this.getTablaHojas()){
+            sb.append("|");
+            sb.append(nodo.getNumero());
+        }
+        txt = "}|{";
+        sb.append(txt);
+        sb.append("Siguientes");
+        for(NodoArbol nodo:this.getTablaHojas()){
+            sb.append("|");
+            sb.append(nodo.getSiguientes().toString());
+        }
+        sb.append("}\"];\n");
+        sb.append("}");
+        txt = sb.toString();
+        System.out.println(txt);        
+    }
+    
     private void asignarSiguientes(ArrayList<Integer>nodos,ArrayList<Integer>siguientes){
         for (int actual:nodos){
             for (int sig:siguientes){
@@ -310,9 +416,9 @@ public class Arbol {
         }      
         nombrarHojas(actual.getIzquierda());
         nombrarHojas(actual.getDerecha());
-        if (actual.getTipo()==Type.TEXTO){
+        if (actual.getTipo()==Type.TEXTO ||actual.getTipo()==Type.SALTO||actual.getTipo()==Type.COMILLA||actual.getTipo()==Type.COMILLA_DOBLE){
             actual.setNumero(this.getContadorHojas());
-            actual.setDato(actual.getDato().replaceAll("\\\"",""));
+            //actual.setDato(actual.getDato().replaceAll("\\\"",""));
             this.setContadorHojas(this.getContadorHojas() + 1);
             this.getTablaHojas().add(actual);
         }
@@ -325,7 +431,8 @@ public class Arbol {
         }
         calculoAPU(actual.getIzquierda());
         calculoAPU(actual.getDerecha());
-        if (actual.getTipo()==Type.TEXTO){
+        
+        if (actual.getTipo()==Type.TEXTO || actual.getTipo()==Type.SALTO ||actual.getTipo()==Type.COMILLA ||actual.getTipo()==Type.COMILLA_DOBLE){
             actual.setAnulable(false);
             actual.addPrimeraPos(actual.getNumero());
             actual.addUltimaPos((byte)actual.getNumero());
@@ -474,7 +581,9 @@ public class Arbol {
     
     public boolean loContiene(String nodo,String alfabeto){
         char primero,segundo,letra;
-        nodo = nodo.replaceAll("\"", "");
+        if (nodo.length()>2){
+            nodo = nodo.replaceAll("\"", "");
+        }        
         if (nodo.equals(alfabeto)){
             return true;
         }   

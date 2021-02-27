@@ -49,7 +49,11 @@ public class Afnd {
             n2.setIzquierda(n3);
             //Regresar si vienen más de este tipo
             n3.setAtras(n2);
-            n3.setIzquierda(n4);         
+            n3.setIzquierda(n4);  
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
+            n4.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n4;
@@ -62,6 +66,10 @@ public class Afnd {
             n1.setIzquierda(n2);
             n3.setIzquierda(n4);
             n3.setAtras(n2);
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
+            n4.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n4;
@@ -89,7 +97,11 @@ public class Afnd {
             n1.setAdelante(n4); //Va desde el inicio al último
             n2.setIzquierda(n3);
             n3.setAtras(n2);
-            n3.setIzquierda(n4);         
+            n3.setIzquierda(n4); 
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
+            n4.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n4;
@@ -103,6 +115,10 @@ public class Afnd {
             n3.setIzquierda(n4);
             n1.setAdelante(n4);
             n3.setAtras(n2);
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
+            n4.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n4;
@@ -124,6 +140,9 @@ public class Afnd {
             n3.setDato(inst[1].toString());
             n1.setIzquierda(n3);
             //n2.setIzquierda(n3);
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =(Nodo)inst2[2];            
@@ -133,6 +152,9 @@ public class Afnd {
             n2 = (Nodo)inst[2]; //Última posición de la lista
             n3.setDato(inst2[1].toString());
             n2.setIzquierda(n3);
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n3;                       
@@ -144,6 +166,9 @@ public class Afnd {
             n3.setDato(inst2[1].toString());
             n1.setIzquierda(n2);
             n2.setIzquierda(n3);
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n3;               
@@ -186,6 +211,10 @@ public class Afnd {
             n1.setAdelante(n4);
             n2.setIzquierda(n3);
             n3.setIzquierda(n4);
+            n4.setTipo();
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n4;
@@ -197,6 +226,10 @@ public class Afnd {
             n1.setIzquierda(n2);
             n1.setAdelante(n4);
             n3.setIzquierda(n4);
+            n4.setTipo();
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n4;
@@ -227,6 +260,12 @@ public class Afnd {
             n1.setDerecha(n4);
             n3.setIzquierda(n6);
             n5.setIzquierda(n6);
+            n4.setTipo();
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
+            n5.setTipo();
+            n6.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n6;            
@@ -243,6 +282,12 @@ public class Afnd {
             n4.setIzquierda(n5);
             n3.setIzquierda(n6);
             n5.setIzquierda(n6);
+            n4.setTipo();
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
+            n5.setTipo();
+            n6.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n6;                
@@ -259,6 +304,12 @@ public class Afnd {
             n4.setIzquierda(n5);
             n3.setIzquierda(n6);
             n5.setIzquierda(n6);
+            n4.setTipo();
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
+            n5.setTipo();
+            n6.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n6;             
@@ -274,6 +325,12 @@ public class Afnd {
             n1.setDerecha(n4);
             n3.setIzquierda(n6); //Último de argumento 1 hacia final de disyunción
             n5.setIzquierda(n6); //Último de argumento 2 hacia final de disyunción
+            n4.setTipo();
+            n2.setTipo();
+            n3.setTipo();
+            n1.setTipo();
+            n5.setTipo();
+            n6.setTipo();
             resultado[0] =1;
             resultado[1] =n1;
             resultado[2] =n6;               
@@ -302,9 +359,10 @@ public class Afnd {
         String caracter = "";
         String ultimoSigno;
         NodoArbol nArbol,nArboltmp,nArboltmp2;
-                    
+        char hola;
         for (int i = expresion.length()-1;i>=0;i--){
            caracter += expresion.charAt(i);
+           hola = expresion.charAt(i-1);
            if ("+?*|.".contains(caracter)){
                //Agregar signos
                signo = new Object[2];
@@ -312,7 +370,7 @@ public class Afnd {
                signo[1]=posicion;
                posicion++;
                pilaSignos.push(signo);
-           }else if (caracter.equals("\"")){
+           }else if (caracter.equals("\"") && expresion.charAt(i-1)!='\\'){
                //Conseguir texto
                instrucciones = obtenerTexto(expresion,i);
                instrucciones[3]=posicion;
@@ -325,7 +383,22 @@ public class Afnd {
                pilaElementos.push(instrucciones);
                i = (int) instrucciones[2];
                encontrado = true;
-           }else if (caracter.equals("}")){
+               
+           }else if ((caracter.equals("n") && expresion.charAt(i-1)=='\\') || (caracter.equals("\"") && expresion.charAt(i-1)=='\\') || (caracter.equals("\'") && expresion.charAt(i-1)=='\\')){
+               //Conseguir salto o comillas
+               instrucciones = obtenerCaracterEspecial(expresion,i);
+               instrucciones[3]=posicion;
+               posicion++;
+               //Creando nodo para árbol-----------------------------------------------
+               nArbol = new NodoArbol(contadorNodosArbol,instrucciones[1].toString());
+               pilaElementosArbol.push(nArbol);
+               contadorNodosArbol++;
+               //----------------------------------------------------------------------
+               pilaElementos.push(instrucciones);
+               i = (int) instrucciones[2];
+               encontrado = true;           
+           }
+               else if (caracter.equals("}")){
                //Conseguir conjunto
                instrucciones = obtenerConjunto(expresion,i);
                instrucciones[3]=posicion;
@@ -429,7 +502,7 @@ public class Afnd {
     cabeza.setDerecha(almohadilla);
     cabeza.setIzquierda(arbol.getRaiz());
     arbol.setRaiz(cabeza);
-    pintar();
+    //pintar();
     return arbol;    
     }
     
@@ -468,9 +541,17 @@ public class Afnd {
     
     private Object[] obtenerTexto(String texto,int i){
         StringBuilder sb = new StringBuilder();
-        String resultado = "";
-        sb.append("\"");
         Object array[] = new Object[4];
+        String resultado = "";
+        if (texto.charAt(i-1)=='\\'){
+            sb.append("\\\"");
+            resultado = sb.reverse().toString();
+            array[0]=0;
+            array[1]=resultado;
+            array[2]=i-1;
+        }
+        
+        sb.append("\"");
         for (int j = i-1;j>=0;j--){
             if (texto.charAt(j)=='"'){
                 sb.append(texto.charAt(j));
@@ -480,6 +561,26 @@ public class Afnd {
             sb.append(texto.charAt(j));
         }
         //resultado+=texto.charAt(i);
+        resultado = sb.reverse().toString();
+        array[0]=0;
+        array[1]=resultado;
+        array[2]=i;
+        return array;
+    }
+    
+    private Object[] obtenerCaracterEspecial(String texto, int i){
+        StringBuilder sb = new StringBuilder();
+        String resultado = "";
+        Object array[] = new Object[4];  
+        for (int j = i;j>=0;j--){
+            if (texto.charAt(j)=='\\'){
+                sb.append(texto.charAt(j));
+                i = j;
+                break;
+            }
+            sb.append(texto.charAt(j));
+            
+        }
         resultado = sb.reverse().toString();
         array[0]=0;
         array[1]=resultado;
@@ -558,7 +659,13 @@ public class Afnd {
         }
         recorrerLista(actual.getIzquierda(),sb);
         if (actual.getIzquierda()!=null){
-            tmp = actual.getNombre()+" -> "+actual.getIzquierda().getNombre()+" [ label ="+actual.getIzquierda().getDato()+"];\n";
+            if(actual.getIzquierda().getTipo()==Type.COMILLA_DOBLE||actual.getIzquierda().getTipo()==Type.COMILLA){
+                tmp = actual.getNombre()+" -> "+actual.getIzquierda().getNombre()+" [ label =\"\\\\"+actual.getIzquierda().getDato()+"\"];\n";
+            }else if (actual.getIzquierda().getTipo()==Type.SALTO){
+                tmp = actual.getNombre()+" -> "+actual.getIzquierda().getNombre()+" [ label =\"\\"+actual.getIzquierda().getDato()+"\"];\n";
+            }else{
+                tmp = actual.getNombre()+" -> "+actual.getIzquierda().getNombre()+" [ label ="+actual.getIzquierda().getDato()+"];\n";
+            }           
             if (sb.indexOf(tmp)==-1){           
                 sb.append(tmp);                
             }
@@ -566,11 +673,23 @@ public class Afnd {
         }
         recorrerLista(actual.getDerecha(),sb);
         if (actual.getDerecha()!=null){
-            tmp = actual.getNombre()+" -> "+actual.getDerecha().getNombre()+" [ label ="+actual.getDerecha().getDato()+"];\n";
+            if(actual.getDerecha().getTipo()==Type.COMILLA_DOBLE||actual.getDerecha().getTipo()==Type.COMILLA){
+                tmp = actual.getNombre()+" -> "+actual.getDerecha().getNombre()+" [ label =\"\\\\"+actual.getDerecha().getDato()+"\"];\n";
+            }else if (actual.getDerecha().getTipo()==Type.SALTO){
+                tmp = actual.getNombre()+" -> "+actual.getDerecha().getNombre()+" [ label =\"\\"+actual.getDerecha().getDato()+"\"];\n";
+            }else{
+                tmp = actual.getNombre()+" -> "+actual.getDerecha().getNombre()+" [ label ="+actual.getDerecha().getDato()+"];\n";
+            }   
             sb.append(tmp);
         }
         if (actual.getAdelante()!=null){
-            tmp = actual.getNombre()+" -> "+actual.getAdelante().getNombre()+" [ label ="+actual.getAdelante().getDato()+"];\n";
+            if(actual.getAdelante().getTipo()==Type.COMILLA_DOBLE||actual.getAdelante().getTipo()==Type.COMILLA){
+                tmp = actual.getNombre()+" -> "+actual.getAdelante().getNombre()+" [ label =\"\\\\"+actual.getAdelante().getDato()+"\"];\n";
+            }else if (actual.getAdelante().getTipo()==Type.SALTO){
+                tmp = actual.getNombre()+" -> "+actual.getAdelante().getNombre()+" [ label =\"\\"+actual.getAdelante().getDato()+"\"];\n";
+            }else{
+                tmp = actual.getNombre()+" -> "+actual.getAdelante().getNombre()+" [ label ="+actual.getAdelante().getDato()+"];\n";
+            }   
             sb.append(tmp);
         }     
         return actual;

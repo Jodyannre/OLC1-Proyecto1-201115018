@@ -40,13 +40,15 @@ DIGITO = [0-9]
 LETRA_MI = [a-z]
 LETRA_MA = [A-Z]
 LETRA = {LETRA_MI}|{LETRA_MA}
-FIN_LINEA = (\r|\n|(\r\n))
+FIN_LINEA = (\r|(\r))
 
 
 /*Instruccion*/
 IDENTIFICADOR = ({LETRA_MI}|{LETRA_MA})({LETRA}|{DIGITO}|_)*
 CONJUNTO = "{"{IDENTIFICADOR}"}"
-SALTO = "\n"
+SALTO = \\"n"
+COMILLA = \\"\'"
+COMILLA_DOBLE = \\"\""
 SIGNO_ASIGNACION = "->"
 SEPARACION = "%%"
 SIGNO_APERTURA = "{" 
@@ -58,7 +60,7 @@ COM_A = "<"
 COM_C = ">"
 //ENTER = [\ \n]+
 ESPACIO = ({FIN_LINEA}|[ \t\f])
-COMM_LINEA = "//"({LETRA} | {DIGITO} | {ASCII})* {FIN_LINEA}?
+COMM_LINEA = "//"({LETRA} | {DIGITO} | {ASCII})* 
 COMM_MULTI = {COM_A}"!" ({LETRA} | {DIGITO} | {ASCII} | {SALTO})* "!"{COM_C} 
 TEXTO = \"[^\"]*\"
 //NOTACION =  {TEXTO} | {CONJUNTO}
@@ -96,13 +98,16 @@ NOTACION = {NOTACION_LETRA_MA}|{NOTACION_LETRA_MI}|{NOTACION_LETRA_COMB}|{NOTACI
   {SIGNO_UNI}                    {return new Symbol(sym.SIGNO_UNI, yyline, yycolumn, yytext());} 
   {TEXTO}                        {return new Symbol(sym.TEXTO, yyline, yycolumn, yytext());}
   {CONJUNTO}                     {return new Symbol(sym.CONJUNTO, yyline, yycolumn, yytext());} 
+  {SALTO}                        {return new Symbol(sym.SALTO, yyline, yycolumn, yytext());} 
+  {COMILLA}                      {return new Symbol(sym.COMILLA, yyline, yycolumn, yytext());} 
+  {COMILLA_DOBLE}                {return new Symbol(sym.COMILLA_DOBLE, yyline, yycolumn, yytext());} 
   //\n {yychar=1;}
   {ESPACIO} {}
    .                             {return new Symbol(sym.error, yyline, yycolumn, yytext());}  
 }
 
     <STRING> {
-      \/\/                           { yybegin(YYINITIAL);
+      "//"                           { yybegin(YYINITIAL);
                                        return symbol(sym.COM_LINEA,
                                        string.toString()); }
       [^\n]+                   { string.append( yytext() ); }

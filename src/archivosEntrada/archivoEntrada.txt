@@ -1,8 +1,9 @@
 {
-CONJ: letra -> a~z;
-CONJ: digito -> 0~9;
-<!sdfsdf!ssdfsdfdfsdfsdfs!>
-ExpReg1 -> . {letra} * | "_" | {letra} {digito}; 
+CONJ: letra -> a~z; 
+CONJ: digito -> 0~9; 
+<!sdfsdf!ssdfsdf
+dfsdfsdfs!>
+ExpReg1 -> . \n * | "hola" | \' \"; 
 ExpresionReg2 -> . + {digito} . "." + {digito};
 RegEx3 -> . {digito} * | "_" | {letra} {digito};
 Reg4 -> | | * "c" * "b" * "a"; 
@@ -11,7 +12,11 @@ Reg6 -> . . . * | "a" "b" "a" "b" "b";
 %%
 %%
 
-ExpReg1 : "primerlexemacokoa"; 
+ExpReg1 : "\nhola\'"; 
+ExpresionReg3 : "34.44";
+ExpReg3 : "primerlexemacokoa"; 
+ExpresionReg4 : "34.44";
+ExpReg4 : "primerlexemacokoa"; 
 ExpresionReg2 : "34.44";
 }
 

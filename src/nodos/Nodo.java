@@ -14,6 +14,7 @@ public class Nodo {
     private String nombre;
     private Nodo izquierda,derecha,atras,adelante;
     private String dato;
+    private Type tipo;
     private boolean Final;
     
     public Nodo(int nombre,String dato){
@@ -23,6 +24,7 @@ public class Nodo {
         this.atras = null;
         this.adelante = null;
         this.nombre="";
+        this.tipo = encontrarTipo(dato);
     }
     public Nodo(){
         this.izquierda = null;
@@ -31,6 +33,21 @@ public class Nodo {
         this.adelante = null;
         this.dato="";
         this.nombre="";
+    }
+    
+    private Type encontrarTipo(String dato){
+        switch(dato){
+            case "\\n":
+                return Type.SALTO;
+            case "\\\"":
+                return Type.COMILLA_DOBLE;
+            case "\\\'":
+                return Type.COMILLA;
+            case "ε":
+                return Type.TEXTO;
+            default:
+                return Type.TEXTO;               
+        }
     }
 
     /**
@@ -144,6 +161,20 @@ public class Nodo {
      */
     public void setNumero(byte numero) {
         this.numero = numero;
+    }
+
+    /**
+     * @return the tipo
+     */
+    public Type getTipo() {
+        return tipo;
+    }
+
+    /**
+     * @param tipo the tipo to set
+     */
+    public void setTipo() {
+        this.tipo = this.encontrarTipo(this.dato);
     }
     
     

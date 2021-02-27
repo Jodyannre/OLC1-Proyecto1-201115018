@@ -46,6 +46,12 @@ public class NodoArbol {
                 return Type.KLEENE;
             case "?":
                 return Type.UNO_CERO;
+            case "\\n":
+                return Type.SALTO;
+            case "\\\"":
+                return Type.COMILLA_DOBLE;
+            case "\\\'":
+                return Type.COMILLA;
             default:
                 return Type.TEXTO;               
         }

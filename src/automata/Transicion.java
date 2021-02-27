@@ -6,19 +6,56 @@
 package automata;
 
 import nodos.NodoAFD;
+import nodos.Type;
 
 /**
  *
  * @author Jers_
  */
 public class Transicion {
+
+    /**
+     * @return the tipo
+     */
+    public Type getTipo() {
+        return tipo;
+    }
     private String simbolos_mostrar;
     private String simbolos;
     private NodoAFD destino;
+    private Type tipo;
     public Transicion(String s, NodoAFD d, String sm){
         this.simbolos = s;
         this.destino = d;
         this.simbolos_mostrar = sm;
+        this.tipo = this.encontrarTipo(s);
+    }
+
+    private Type encontrarTipo(String dato){
+        
+        if (dato.contains("~")){
+            return Type.CONJUNTO_SIMPLE;
+        }
+        
+        else if (dato.contains(",") && !dato.contains("\"") && !dato.contains("\'")){
+            return Type.CONJUNTO_COMBINADO;
+        }
+        
+        else if (dato.contains("\\n") && !dato.contains("\"")&& !dato.contains("\'")){
+            return Type.SALTO;
+        }
+
+        else if (dato.contains("\\\"") && dato.length()<3){
+            return Type.COMILLA_DOBLE;
+        }
+
+        else if (dato.contains("\\\'") && dato.length()<3){
+            return Type.COMILLA;
+        }
+        else {
+            return Type.TEXTO;
+        }
+        
     }
 
     /**
