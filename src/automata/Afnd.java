@@ -5,19 +5,21 @@
  */
 package automata;
 import arbol.Arbol;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.io.IOException;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nodos.Nodo;
 import nodos.NodoArbol;
 import nodos.Type;
+import programa.Impresion;
 
 /**
  *
  * @author Jers_
  */
 public class Afnd {
+    private String nombreExpresion;
     private byte n_estados;
     private String reglas;
     private Nodo estadoI;
@@ -613,7 +615,7 @@ public class Afnd {
     }
     
     
-    public void pintar(){
+    public void pintar() throws InterruptedException{
         Nodo inicio = this.listaEstados.getPrimero();
         this.listaEstados.getUltimo().setFinal(true);
         String cabecera = "digraph afnd {"+"\n"
@@ -630,9 +632,16 @@ public class Afnd {
         //sb.append(cabecera);
         sb.append("}");
         cabecera = sb.toString();
-        System.out.println(cabecera);
-        System.out.println("ε");
+        //System.out.println(cabecera);
+        //System.out.println("ε");
+        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\afnd_201115018";
+        try {
+            Impresion.procesarDot(cabecera, this.getNombreExpresion(), path);
+        } catch (IOException ex) {
+            Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+     
     
     private Nodo recorrerLista(Nodo actual, StringBuilder sb){
         String tmp;
@@ -749,6 +758,20 @@ public class Afnd {
      */
     public void setListaEstados(Lista listaEstados) {
         this.listaEstados = listaEstados;
+    }
+
+    /**
+     * @return the nombreExpresion
+     */
+    public String getNombreExpresion() {
+        return nombreExpresion;
+    }
+
+    /**
+     * @param nombreExpresion the nombreExpresion to set
+     */
+    public void setNombreExpresion(String nombreExpresion) {
+        this.nombreExpresion = nombreExpresion;
     }
     
 }

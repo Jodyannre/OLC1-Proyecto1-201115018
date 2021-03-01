@@ -148,8 +148,9 @@ action code
 
 
 /* Terminals (tokens returned by the scanner). */
-terminal String IDENTIFICADOR,CONJUNTO,DOSPUNTOS,SIGNO_APERTURA,SIGNO_CIERRE,SIGNO_ASIGNACION,PUNTOCOMA,COMENTARIO;
-terminal String SEPARACION,SIGNO_UNI, SIGNO_COMB, TEXTO, NOTACION, CONJ, COM_LINEA, SALTO,COMILLA,COMILLA_DOBLE;
+terminal String IDENTIFICADOR,CONJUNTO,DOSPUNTOS,SIGNO_APERTURA,SIGNO_CIERRE,SIGNO_ASIGNACION,PUNTOCOMA;
+terminal String SEPARACION,SIGNO_UNI, SIGNO_COMB, TEXTO, NOTACION, CONJ, SALTO,COMILLA,COMILLA_DOBLE;
+//terminal COM_LINEA,COMENTARIO;
 
 /* Non-terminals */
 nonterminal sentencias, asignaciones, cadenas, asignacion, expresiones, seccion, operacion, sentencia;
@@ -170,8 +171,8 @@ sentencias ::= asignaciones cadenas
 
 asignaciones ::= asignacion asignaciones
     |expresiones asignaciones
-    |COM_LINEA asignaciones
-    |COMENTARIO asignaciones
+    //|COM_LINEA asignaciones
+    //|COMENTARIO asignaciones
     |seccion
 ;
 
@@ -247,6 +248,6 @@ cadenas ::= IDENTIFICADOR:id DOSPUNTOS TEXTO:txt
             :}
             PUNTOCOMA cadenas
     |SIGNO_CIERRE
-    |COM_LINEA cadenas
+    //|COM_LINEA cadenas
 
 ;

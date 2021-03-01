@@ -31,7 +31,7 @@ import java_cup.runtime.*;
 %char
 %column
 %full
-%state COMENTARIOS
+%state COMENTARIO
 %state STRING
 
 /*Principales*/
@@ -42,6 +42,14 @@ LETRA_MA = [A-Z]
 LETRA = {LETRA_MI}|{LETRA_MA}
 FIN_LINEA = (\r|(\r))
 
+
+/*Comentarios de una línea*/
+/*
+LineTerminator = \r|\n|\r\n
+InputCharacter = [^\r\n]
+WhiteSpace     = {LineTerminator} | [ \t\f]
+EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}?
+*/
 
 /*Instruccion*/
 IDENTIFICADOR = ({LETRA_MI}|{LETRA_MA})({LETRA}|{DIGITO}|_)*
@@ -58,13 +66,12 @@ SIGNO_UNI = [+*?]
 ASCII = [\x00-\x30\x5B-\x60\x7B-\x7E]
 COM_A = "<"
 COM_C = ">"
-//ENTER = [\ \n]+
 ESPACIO = ({FIN_LINEA}|[ \t\f])
-COMM_LINEA = "//"({LETRA} | {DIGITO} | {ASCII})* 
+COMM_LINEA = "//"({LETRA} | {DIGITO} | {ASCII})*
 COMM_MULTI = {COM_A}"!" ({LETRA} | {DIGITO} | {ASCII} | {SALTO})* "!"{COM_C} 
-TEXTO = \"[^\"]*\"
+TEXTO = \"([^\"]|{COMILLA_DOBLE})*\"
 //NOTACION =  {TEXTO} | {CONJUNTO}
-COMENTARIO = {COMM_LINEA} | {COMM_MULTI}
+COMENTARIO = {COMM_MULTI}|{COMM_LINEA}
 COMA = ","
 SIGNO_RANGO = "~"
 
@@ -89,7 +96,10 @@ NOTACION = {NOTACION_LETRA_MA}|{NOTACION_LETRA_MI}|{NOTACION_LETRA_COMB}|{NOTACI
   {IDENTIFICADOR}                {return new Symbol(sym.IDENTIFICADOR, yyline, yycolumn, yytext());}
   {NOTACION}                     {return new Symbol(sym.NOTACION, yyline, yycolumn, yytext());} 
   {COMENTARIO}                   {} 
-  {COMM_LINEA}                   {}
+  //{COMM_LINEA}                 {}
+  //{EndOfLineComment}           {}
+  //{WhiteSpace}                 {}
+  //"//"                         { string.setLength(0); yybegin(COMENTARIO); }
   {SIGNO_APERTURA}               {return new Symbol(sym.SIGNO_APERTURA, yyline, yycolumn, yytext());}
   {SIGNO_CIERRE}                 {return new Symbol(sym.SIGNO_CIERRE, yyline, yycolumn, yytext());}
   {SIGNO_ASIGNACION}             {return new Symbol(sym.SIGNO_ASIGNACION, yyline, yycolumn, yytext());}
@@ -106,13 +116,15 @@ NOTACION = {NOTACION_LETRA_MA}|{NOTACION_LETRA_MI}|{NOTACION_LETRA_COMB}|{NOTACI
    .                             {return new Symbol(sym.error, yyline, yycolumn, yytext());}  
 }
 
-    <STRING> {
-      "//"                           { yybegin(YYINITIAL);
+
+/*
+    <COMENTARIO> {
+      \n                               {yybegin(YYINITIAL);
                                        return symbol(sym.COM_LINEA,
                                        string.toString()); }
-      [^\n]+                   { string.append( yytext() ); }
+      [^\n]+                           {string.append( yytext() ); }
     }
-
+*/
 /* error fallback */
 [^]                              { throw new Error("Illegal character <"+
                                                     yytext()+">"); }

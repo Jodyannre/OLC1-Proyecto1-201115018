@@ -50,16 +50,6 @@ public class prueba2 {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
-        //String instruccion = "((([0~9]+).\".\").[0~9])";
-        //String instruccion = "(([0~9]|\"k\")|[a-b])";
-        //String instruccion = "(((\"a\"*)|\"b\"*))";
-        //String instruccion = "\"c\"*\"b\"*|\"a\"*|";
-        //String instruccion = "{monstruo}{ascii}{letra}{digito}...?";
-        //String instruccion = "{letra}\"_\"{letra}{digito}||*.";
-        //String instruccion = "{digito}\".\"{digito}+..";
-        //String instruccion = "\"a\"\"a\"\"b\"|*\"b\"..";
-        //String instruccion = "\"a\"\"b\"|*\"a\".\"b\".\"b\".";
         conjuntos = parser.getConjuntos();
         id_conjuntos = parser.get_id_conjuntos();
         er = parser.getER();
@@ -68,10 +58,7 @@ public class prueba2 {
         entradas = parser.getEntradas();
         id_entradas = parser.get_id_entradas();
                 //Árbol creado e impreso, AFD creado e impreso, AFND creado e impreso, toca crear método para validación de cadenas
-        char e = '\\';
-        if (e == '\\'){
-            System.out.println("Si es igual");
-        }
+
         for (int i=0;i<er.size();i++){
             cadenaEvaluar = entradas.get(contadorCadenaEvaluada);
             cadenaEvaluar = cadenaEvaluar.substring(1, cadenaEvaluar.length()-1);
@@ -79,23 +66,22 @@ public class prueba2 {
             afnd = new Afnd();
             //Crear árbol y obtenerlo junto con el AFND
             arbol = afnd.crearEstados(er.get(i));
+            arbol.setNombreExpresion(id_er.get(0));
             arbol.setAlfabeto(alfabetos.get(i));
             arbol.setConjuntos(conjuntos);
             arbol.setId_conjuntos(id_conjuntos);
+            afnd.setNombreExpresion(id_er.get(0));
             afnd.pintar();
             arbol.calculos();
+            arbol.pintar();
             arbol.pintarTablaTransiciones();
             arbol.pintarTablaSiguientes();
+            arbol.getAfd().setNombreExpresion(id_er.get(0));
+            arbol.getAfd().pintar();           
             resultado = arbol.getAfd().evaluar(cadenaEvaluar);
-            //AFD terminado, ya se validan cadenas y arreglado el error de las transiciones tipo cruz
-            //Toca dibujar la tabla de siguientes, transiciones
-            System.out.println("El resultado es: "+resultado)
-                    //Ya están las tablas y la validación de cadenas, arreglados problemas con autómatas y árbol y los caracteres especiales
-                    //Comenzar con la interfaz gráfica y quedará pendiente para el final el trato de errores y los xml
+            System.out.println("El resultado es: "+resultado);
             System.out.println("De la cadena: "+cadenaEvaluar);
-            contadorCadenaEvaluada++;
-            //Crear cada árbol de cada ER    
-                    
+            contadorCadenaEvaluada++;                    
         }
 
      

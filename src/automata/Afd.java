@@ -5,9 +5,14 @@
  */
 package automata;
 
+import arbol.Arbol;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nodos.NodoAFD;
 import nodos.Type;
+import programa.Impresion;
 
 /**
  *
@@ -15,6 +20,7 @@ import nodos.Type;
  */
 public class Afd {
     private NodoAFD estado_inicial; 
+    private String nombreExpresion;
     private ArrayList<NodoAFD>estados;
     public Afd(){
         this.estados= new ArrayList<>();
@@ -47,7 +53,7 @@ public class Afd {
         return null;
     }
     
-    public void pintar(){
+    public void pintar() throws InterruptedException{
         String linea = "digraph finite_state_machine {\n" 
         + "rankdir=LR;\n" 
         + "size=\"8,5\"\n"
@@ -83,7 +89,14 @@ public class Afd {
         }
         sb.append("}");
         linea = sb.toString();
-        System.out.println(linea);
+        //System.out.println(linea);
+        
+        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\afd_201115018";
+        try {
+            Impresion.procesarDot(linea, this.getNombreExpresion(), path);
+        } catch (IOException ex) {
+            Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public boolean evaluar(String cadena){
@@ -207,6 +220,20 @@ public class Afd {
      */
     public ArrayList<NodoAFD> getEstados() {
         return estados;
+    }
+
+    /**
+     * @return the nombreExpresion
+     */
+    public String getNombreExpresion() {
+        return nombreExpresion;
+    }
+
+    /**
+     * @param nombreExpresion the nombreExpresion to set
+     */
+    public void setNombreExpresion(String nombreExpresion) {
+        this.nombreExpresion = nombreExpresion;
     }
     
     

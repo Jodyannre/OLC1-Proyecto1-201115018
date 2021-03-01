@@ -7,16 +7,21 @@ package arbol;
 
 import automata.Afd;
 import automata.Transicion;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nodos.NodoAFD;
 import nodos.NodoArbol;
 import nodos.Type;
+import programa.Impresion;
 
 /**
  *
  * @author Jers_
  */
 public class Arbol {
+    private String nombreExpresion;
     private NodoArbol raiz,ultimo;
     private int contadorHojas;
     private int contadorEstados;
@@ -40,7 +45,7 @@ public class Arbol {
         this.afd = new Afd();
     }
     
-    public void pintar(){
+    public void pintar() throws InterruptedException{
         String cabecera = "digraph Arbol {"+"\n"
                 + " rankdir=UD;"+"\n"
                 + " size=\"8,5\""+"\n"
@@ -50,7 +55,16 @@ public class Arbol {
         recorrer(this.raiz,sb);
         sb.append("}");
         cabecera = sb.toString();
-        System.out.println(cabecera);      
+        //System.out.println(cabecera); 
+        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\arboles_201115018";
+        try {
+            Impresion.procesarDot(cabecera, this.nombreExpresion, path);
+        } catch (IOException ex) {
+            Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        this.pintarTablaSiguientes();
+        this.pintarTablaTransiciones();
     }
     
     private NodoArbol recorrer(NodoArbol actual, StringBuilder sb){
@@ -153,7 +167,7 @@ public class Arbol {
      * @param alfabeto the alfabeto to set
      */
     public void setAlfabeto(ArrayList<String> alfabeto) {
-        this.alfabeto = alfabeto;
+        this.alfabeto = (ArrayList<String>)alfabeto.clone();;
     }
     
     
@@ -163,13 +177,13 @@ public class Arbol {
         this.nombrarHojas(this.getRaiz());
         this.calculoAPU(this.getRaiz());
         this.calculoSiguientes(this.getRaiz());   
-        this.pintar();
+        //this.pintar();
         elemento = this.calculoEstados();
         if (!elemento.equals("")){
             System.out.println("El conjunto: "+elemento+" no existe. No se puede crear el AFD");
             return;
         }
-        this.afd.pintar();
+        //this.afd.pintar();
     }
     
     
@@ -305,7 +319,7 @@ public class Arbol {
         return actual;
     }
     
-    public void pintarTablaTransiciones(){
+    public void pintarTablaTransiciones() throws InterruptedException{
         StringBuilder sb = new StringBuilder();
         boolean encontrado = false;
         String txt = "set0 [label = \"{Estado";      
@@ -353,11 +367,16 @@ public class Arbol {
         sb.append("}\"];\n");
         sb.append("}");
         txt = sb.toString();
-        System.out.println(txt);
-        
+        //System.out.println(txt);
+        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\transiciones_201115018";
+        try {
+            Impresion.procesarDot(txt, this.getNombreExpresion(), path);
+        } catch (IOException ex) {
+            Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
+        }        
     }
     
-    public void pintarTablaSiguientes(){
+    public void pintarTablaSiguientes() throws InterruptedException{
         StringBuilder sb = new StringBuilder();
         boolean encontrado = false;
         String txt = "set0 [label = \"{Hojas";      
@@ -398,7 +417,13 @@ public class Arbol {
         sb.append("}\"];\n");
         sb.append("}");
         txt = sb.toString();
-        System.out.println(txt);        
+        //System.out.println(txt);    
+        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\siguientes_201115018";
+        try {
+            Impresion.procesarDot(txt, this.getNombreExpresion(), path);
+        } catch (IOException ex) {
+            Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void asignarSiguientes(ArrayList<Integer>nodos,ArrayList<Integer>siguientes){
@@ -689,7 +714,7 @@ public class Arbol {
      * @param conjuntos the conjuntos to set
      */
     public void setConjuntos(ArrayList<String> conjuntos) {
-        this.conjuntos = conjuntos;
+        this.conjuntos = (ArrayList<String>)conjuntos.clone();
     }
 
     /**
@@ -703,7 +728,7 @@ public class Arbol {
      * @param id_conjuntos the id_conjuntos to set
      */
     public void setId_conjuntos(ArrayList<String> id_conjuntos) {
-        this.id_conjuntos = id_conjuntos;
+        this.id_conjuntos = (ArrayList<String>)id_conjuntos.clone();
     }
 
     /**
@@ -732,6 +757,21 @@ public class Arbol {
      */
     public void setAfd(Afd afd) {
         this.afd = afd;
+    }
+
+    /**
+     * @return the nombreExpresion
+     */
+    public String getNombreExpresion() {
+        return nombreExpresion;
+    }
+
+    /**
+     * @param nombreExpresion the nombreExpresion to set
+     */
+    public void setNombreExpresion(String nombreExpresion) {
+        this.nombreExpresion = nombreExpresion;
+        this.afd.setNombreExpresion(nombreExpresion);
     }
  
     
