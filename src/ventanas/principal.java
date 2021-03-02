@@ -14,6 +14,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +26,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import programa.Impresion;
 import programa.Programa;
+import programa.Resultado;
 
 /**
  *
@@ -39,6 +41,7 @@ public class principal extends javax.swing.JFrame {
         initComponents();
         llenarComboTipo();
         textArea.setEditable(false);
+        textSalida.setEditable(false);
         llenarArbol();
         this.setLocationRelativeTo(null);
     }
@@ -92,6 +95,11 @@ public class principal extends javax.swing.JFrame {
         });
 
         bAnalizar.setText("Analizar entrada");
+        bAnalizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bAnalizarActionPerformed(evt);
+            }
+        });
 
         Salida.setText("Salida");
 
@@ -223,13 +231,19 @@ public class principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bGenerarActionPerformed
-         if (!programa.generarAutomatas(principal.texto)){
-             JOptionPane.showMessageDialog(this, "Resultado de operación","Se han generado los autómatas.",JOptionPane.INFORMATION_MESSAGE);
-             Impresion.borrarDots();
-             this.llenarArbol();
-         }else{
-             JOptionPane.showMessageDialog(this, "Resultado de operación","Hay errores y no se lograron generar los autómatas.",JOptionPane.ERROR_MESSAGE);
-         }
+        textSalida.removeAll();
+        try {
+            if (!programa.generarAutomatas(principal.texto)){
+                JOptionPane.showMessageDialog(this, "Se han generado los autómatas.","Resultado de operación",JOptionPane.INFORMATION_MESSAGE);
+                Impresion.borrarDots();
+                this.llenarArbol();
+                principal.datosCargados = true;
+            }else{
+                JOptionPane.showMessageDialog(this, "Hay errores y no se lograron generar los autómatas.","Resultado de operación",JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (InterruptedException ex) {
+            Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_bGenerarActionPerformed
 
     private void comboTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboTipoActionPerformed
@@ -286,6 +300,24 @@ public class principal extends javax.swing.JFrame {
     private void bSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSalirActionPerformed
         System.exit(1);
     }//GEN-LAST:event_bSalirActionPerformed
+
+    private void bAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAnalizarActionPerformed
+        textSalida.removeAll();
+        if (!principal.datosCargados){
+            JOptionPane.showMessageDialog(this, "No hay información cargada.","Resultado de la operación",JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            ArrayList<Resultado> respuesta = principal.programa.validarCadenas();
+            String formato = "";
+            for (Resultado resultado:respuesta){
+                if (resultado.isValido()){
+                    formato = "La expresión: "+resultado.getValor()+" es "+resultado.getResultado()+" con la expresión: "+resultado.getExpresion()+".\n\n";
+                }else{
+                    formato = "La expresión: "+resultado.getValor()+" "+resultado.getResultado()+" ya que no existe la expresión: "+resultado.getExpresion()+".\n\n";
+                }
+                textSalida.append(formato);
+            }            
+        }          
+    }//GEN-LAST:event_bAnalizarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -450,6 +482,7 @@ public class principal extends javax.swing.JFrame {
         texto = salida;
         //return salida;
     }
+    static private boolean datosCargados = false;
     static private String texto;
     static private Programa programa;
     // Variables declaration - do not modify//GEN-BEGIN:variables

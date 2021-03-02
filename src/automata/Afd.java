@@ -105,7 +105,7 @@ public class Afd {
         for (int i = 0;i<cadena.length();i++){                  
             respuesta = hayTransicion(cadena,actual.getTransiciones(),i);
             if ((boolean)respuesta[0]==true){
-                actual = (actual.getTransiciones().get((int)respuesta[1])).getDestino();
+                actual = (actual.getTransiciones().get((int)respuesta[1])).getDestino(); //Aqui está el problema
                 i = (int)respuesta[2];
             }else{
                 return false;
@@ -121,7 +121,7 @@ public class Afd {
         int contador = 0;
         Object respuesta[] = new Object[3];
         Object texto[]= new Object[2];
-        for (int i = posicion;i<cadena.length();i++){
+        int i = posicion;
             caracter = cadena.charAt(i);
             for (Transicion transicion:transiciones){
                 alfabeto = transicion.getSimbolos();
@@ -166,10 +166,8 @@ public class Afd {
                         return respuesta;
                     }                    
                 }
-                contador++;
+                 contador++;
             }
-            
-        }
 
         respuesta[0]=false;
         respuesta[1]=null;
@@ -180,6 +178,12 @@ public class Afd {
     public Object[] verificarTexto(String cadena,int posicion, String alfabeto){
         Object[]respuesta = new Object[2];
         for (int i=0;i<alfabeto.length();i++){
+            //Evaluar si ya termino de comparar la cadena y no la encontró
+            if (cadena.length()-1<posicion){
+                respuesta[0]=false;
+                respuesta[1]=posicion;
+                return respuesta;
+            }
             if (alfabeto.charAt(i)!=cadena.charAt(posicion)){
                 respuesta[0]=false;
                 respuesta[1]=posicion;

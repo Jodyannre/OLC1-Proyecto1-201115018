@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * @author Jers_
  */
 public class prueba2 {
-    public static void main(String[] args) throws IOException {       
+    public static void main(String[] args) throws IOException, InterruptedException {       
         ArrayList<String>conjuntos;
         ArrayList<String>id_conjuntos;
         ArrayList<String>er;

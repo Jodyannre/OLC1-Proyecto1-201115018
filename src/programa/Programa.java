@@ -56,7 +56,13 @@ public class Programa {
             this.entradas.clear();
             this.id_entradas.clear();            
         }
-
+        if (entrada==null){
+            return true;
+        }
+                               
+        if (entrada.length()<=0){
+            return true;
+        }
         //Crear parser, scanner y escanear entrada
         scanner scan = new scanner(new BufferedReader( new StringReader(entrada)));
         parser parser = new parser(scan);
@@ -80,22 +86,80 @@ public class Programa {
         
         //Crear todos los AFND, Arbol y AFD's de la entrada
         for (int i=0;i<er.size();i++){
-            //Crear AFND
-            Afnd afnd = new Afnd();
-            //Crear árbol y obtenerlo junto con el AFND
-            Arbol arbol = afnd.crearEstados(er.get(i));
-            arbol.setNombreExpresion(id_er.get(i));
-            arbol.setAlfabeto(alfabetos.get(i));
-            arbol.setConjuntos(conjuntos);
-            arbol.setId_conjuntos(id_conjuntos);
-            afnd.setNombreExpresion(id_er.get(i));
-            afnd.pintar();
-            arbol.calculos();
-            arbol.pintar();
-            arbol.getAfd().pintar();  
-            this.arboles.add(arbol);
-            this.afnds.add(afnd);
+            //Validar si ya existe el autómata
+            if (!this.yaExisteElAutomata(id_er.get(i))){
+                //Crear AFND
+                Afnd afnd = new Afnd();
+                //Crear árbol y obtenerlo junto con el AFND
+                Arbol arbol = afnd.crearEstados(er.get(i));
+                arbol.setNombreExpresion(id_er.get(i));
+                arbol.setAlfabeto(alfabetos.get(i));
+                arbol.setConjuntos(conjuntos);
+                arbol.setId_conjuntos(id_conjuntos);
+                afnd.setNombreExpresion(id_er.get(i));
+                afnd.pintar();
+                arbol.calculos();
+                arbol.pintar();
+                arbol.getAfd().pintar();  
+                this.arboles.add(arbol);
+                this.afnds.add(afnd);                
+            }else{
+                System.out.println("Ya existe ese autómata: "+id_er.get(i));
+            }
         }    
         return hayErrores;
+    }
+    
+    public ArrayList<Resultado> validarCadenas(){
+        String entrada;
+        String result;
+        String expresion;
+        Resultado resultado;
+        Arbol arbol = new Arbol();
+        boolean sEvaluar = false;
+        ArrayList<Resultado>salida = new ArrayList<>();
+        int index = 0;
+        for (int i=0;i<entradas.size();i++){
+            entrada = entradas.get(i);
+            index = id_er.indexOf(id_entradas.get(i));
+            if (index == -1){
+                result = "no es posible operarla";               
+                expresion = id_entradas.get(i);
+                resultado = new Resultado(entrada,expresion,result);
+                salida.add(resultado);
+            }else{
+                expresion = id_er.get(i);
+                for (Arbol a:arboles){
+                    if (a.getNombreExpresion().equals(expresion)){
+                        arbol = a;
+                        break;
+                    }
+                }
+                if (entrada.charAt(0)=='\"' && entrada.charAt(entrada.length()-1)=='\"'){
+                    entrada = entrada.substring(1,entrada.length()-1);
+                }
+                sEvaluar = arbol.getAfd().evaluar(entrada);
+                if (sEvaluar){
+                    result = "válida";
+                }else{
+                    result = "inválida";
+                }
+                resultado = new Resultado(entrada,expresion,result);
+                resultado.setValido(true);                
+                salida.add(resultado);
+            }
+            
+        }
+            
+        return salida;
+    }
+    
+    private boolean yaExisteElAutomata(String expresion){
+        for (Arbol arbol:this.arboles){
+            if (arbol.getNombreExpresion().equals(expresion)){
+                return true;
+            }
+        }
+        return false;
     }
 }
