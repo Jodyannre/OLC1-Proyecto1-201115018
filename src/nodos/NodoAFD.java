@@ -16,6 +16,7 @@ public class NodoAFD {
     private String nombre;
     private boolean estado_final,estado_inicial;
     private ArrayList<Transicion>transiciones;
+    private String nombreMostrar;
     public NodoAFD(String nombre,boolean e_inicial,boolean e_final){
         this.nombre = nombre;
         this.estado_inicial = e_inicial;

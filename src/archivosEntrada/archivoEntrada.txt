@@ -1,6 +1,6 @@
 {
 CONJ: letra -> a~z;
-CONJ: digito -> 0~9; 
+CONJ: digito -> 0~9;
 <!sdfsdf!ssdfsdf  
 dfs dfsdfs!>
 ExpReg1 -> . \n * | "hola" | \' \"; 
@@ -11,13 +11,10 @@ Reg5 -> . "a" . * | "a" "b" "b";
 Reg6 -> . . . * | "a" "b" "a" "b" "b";
 %%
 %%
-
-ExpReg1 : "\nhola\""; 
+ExpReg1 : "\nhola\"";
 ExpresionReg3 : "34.44";
 ExpReg3 : "primerlexemacokoa"; 
 ExpresionReg4 : "34.44";
 ExpReg4 : "primerlexemacokoa"; 
 ExpresionReg2 : "34.44";
 }
-
-

@@ -273,12 +273,12 @@ public class Afnd {
             resultado[2] =n6;            
                         
         }else if (inst2[0].equals(0) && !inst[0].equals(0)){
-            n2 = (Nodo)inst2[1];
-            n3 = (Nodo)inst2[2];
+            n2 = (Nodo)inst[1];
+            n3 = (Nodo)inst[2];
             n2.setDato("ε");            
             n4.setDato("ε");
             n6.setDato("ε");
-            n5.setDato(inst[1].toString());
+            n5.setDato(inst2[1].toString());
             n1.setIzquierda(n2);
             n1.setDerecha(n4);
             n4.setIzquierda(n5);
@@ -672,6 +672,7 @@ public class Afnd {
                 tmp = actual.getNombre()+" -> "+actual.getIzquierda().getNombre()+" [ label =\"\\\\"+actual.getIzquierda().getDato()+"\"];\n";
             }else if (actual.getIzquierda().getTipo()==Type.SALTO){
                 tmp = actual.getNombre()+" -> "+actual.getIzquierda().getNombre()+" [ label =\"\\"+actual.getIzquierda().getDato()+"\"];\n";
+            
             }else{
                 tmp = actual.getNombre()+" -> "+actual.getIzquierda().getNombre()+" [ label ="+actual.getIzquierda().getDato()+"];\n";
             }           
@@ -686,6 +687,7 @@ public class Afnd {
                 tmp = actual.getNombre()+" -> "+actual.getDerecha().getNombre()+" [ label =\"\\\\"+actual.getDerecha().getDato()+"\"];\n";
             }else if (actual.getDerecha().getTipo()==Type.SALTO){
                 tmp = actual.getNombre()+" -> "+actual.getDerecha().getNombre()+" [ label =\"\\"+actual.getDerecha().getDato()+"\"];\n";
+            
             }else{
                 tmp = actual.getNombre()+" -> "+actual.getDerecha().getNombre()+" [ label ="+actual.getDerecha().getDato()+"];\n";
             }   
@@ -696,6 +698,7 @@ public class Afnd {
                 tmp = actual.getNombre()+" -> "+actual.getAdelante().getNombre()+" [ label =\"\\\\"+actual.getAdelante().getDato()+"\"];\n";
             }else if (actual.getAdelante().getTipo()==Type.SALTO){
                 tmp = actual.getNombre()+" -> "+actual.getAdelante().getNombre()+" [ label =\"\\"+actual.getAdelante().getDato()+"\"];\n";
+            
             }else{
                 tmp = actual.getNombre()+" -> "+actual.getAdelante().getNombre()+" [ label ="+actual.getAdelante().getDato()+"];\n";
             }   

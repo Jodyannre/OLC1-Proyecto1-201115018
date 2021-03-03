@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import programa.Programa;
 
 
 
@@ -26,7 +27,7 @@ import java.util.ArrayList;
  * @author Jers_
  */
 public class prueba2 {
-    public static void main(String[] args) throws IOException, InterruptedException {       
+    public static void main(String[] args) throws IOException, InterruptedException {      
         ArrayList<String>conjuntos;
         ArrayList<String>id_conjuntos;
         ArrayList<String>er;
@@ -74,8 +75,8 @@ public class prueba2 {
             afnd.pintar();
             arbol.calculos();
             arbol.pintar();
-            arbol.pintarTablaTransiciones();
-            arbol.pintarTablaSiguientes();
+            //arbol.pintarTablaTransiciones();
+            //arbol.pintarTablaSiguientes();
             arbol.getAfd().setNombreExpresion(id_er.get(0));
             arbol.getAfd().pintar();           
             resultado = arbol.getAfd().evaluar(cadenaEvaluar);

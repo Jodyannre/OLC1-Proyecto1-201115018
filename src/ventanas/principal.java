@@ -70,6 +70,7 @@ public class principal extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         comboReporte = new javax.swing.JComboBox<>();
+        eliminar = new javax.swing.JButton();
         menu = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         abrir = new javax.swing.JMenuItem();
@@ -126,6 +127,13 @@ public class principal extends javax.swing.JFrame {
 
         jLabel3.setText("Reporte");
 
+        eliminar.setText("jButton1");
+        eliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eliminarActionPerformed(evt);
+            }
+        });
+
         jMenu1.setText("Archivo");
 
         abrir.setText("Abrir");
@@ -169,7 +177,8 @@ public class principal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(25, 25, 25)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(salidaScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 977, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
@@ -180,14 +189,19 @@ public class principal extends javax.swing.JFrame {
                                     .addComponent(textScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(comboTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3)
-                                    .addComponent(bVer)
-                                    .addComponent(comboReporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(salidaScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 977, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(comboTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel2)
+                                            .addComponent(jLabel3)
+                                            .addComponent(bVer)
+                                            .addComponent(comboReporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(eliminar)
+                                        .addGap(95, 95, 95))))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(187, 187, 187)
                         .addComponent(jLabel1))
@@ -219,7 +233,9 @@ public class principal extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(comboReporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(bVer)))
+                        .addComponent(bVer)
+                        .addGap(91, 91, 91)
+                        .addComponent(eliminar)))
                 .addGap(18, 18, 18)
                 .addComponent(Salida)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -231,6 +247,8 @@ public class principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bGenerarActionPerformed
+
+        textSalida.setText("");
         textSalida.removeAll();
         try {
             if (!programa.generarAutomatas(principal.texto)){
@@ -238,10 +256,35 @@ public class principal extends javax.swing.JFrame {
                 Impresion.borrarDots();
                 this.llenarArbol();
                 principal.datosCargados = true;
+                
+                if (programa.hayErrores()){
+                    programa.getErrores().forEach((err) -> {
+                    textSalida.append("Error "+err.getsTipo()+", "+err.getDescripcion()+" en la línea: "+err.getLinea()+" y columna: "+err.getColumna()+"\n");
+                });
+                }
+                programa.getArboles().forEach((arbol)->{
+                    textSalida.append("Autómata: "+arbol.getNombreExpresion()+" generado con éxito.\n");           
+                });
             }else{
-                JOptionPane.showMessageDialog(this, "Hay errores y no se lograron generar los autómatas.","Resultado de operación",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Hay errores y no se lograron generar todos los autómatas.","Resultado de operación",JOptionPane.ERROR_MESSAGE);
+                Impresion.borrarDots();
+                this.llenarArbol();                
+                if (programa.hayErrores()){
+                    programa.getErrores().forEach((err) -> {
+                    textSalida.append("Error "+err.getsTipo()+", "+err.getDescripcion()+" en la línea: "+err.getLinea()+" y columna: "+err.getColumna()+"\n");
+                });
+                }
+                if (programa.getArboles().isEmpty()){principal.datosCargados=false;}else{principal.datosCargados = true;};
+                programa.getArboles().forEach((arbol)->{
+                    textSalida.append("Autómata: "+arbol.getNombreExpresion()+" generado con éxito.\n");           
+                });          
+                if (programa.hayErrores()){
+                    programa.crearPdfErrores();
+                }             
             }
         } catch (InterruptedException ex) {
+            Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FileNotFoundException ex) {
             Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_bGenerarActionPerformed
@@ -272,6 +315,8 @@ public class principal extends javax.swing.JFrame {
     }//GEN-LAST:event_bVerActionPerformed
 
     private void abrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirActionPerformed
+        this.textArea.setText("");
+        this.textArea.removeAll();
         JFileChooser selector = new JFileChooser("C:\\Users\\Jers_\\OneDrive\\Desktop");
         selector.setDialogTitle("Seleccione un archivo de entrada");
         selector.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -302,12 +347,14 @@ public class principal extends javax.swing.JFrame {
     }//GEN-LAST:event_bSalirActionPerformed
 
     private void bAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAnalizarActionPerformed
-        textSalida.removeAll();
+        //textSalida.removeAll();
+        textSalida.setText("");
         if (!principal.datosCargados){
             JOptionPane.showMessageDialog(this, "No hay información cargada.","Resultado de la operación",JOptionPane.INFORMATION_MESSAGE);
         }else{
             ArrayList<Resultado> respuesta = principal.programa.validarCadenas();
             String formato = "";
+            JOptionPane.showMessageDialog(this, "Entrada analizada.","Resultado de la operación",JOptionPane.INFORMATION_MESSAGE);
             for (Resultado resultado:respuesta){
                 if (resultado.isValido()){
                     formato = "La expresión: "+resultado.getValor()+" es "+resultado.getResultado()+" con la expresión: "+resultado.getExpresion()+".\n\n";
@@ -315,9 +362,20 @@ public class principal extends javax.swing.JFrame {
                     formato = "La expresión: "+resultado.getValor()+" "+resultado.getResultado()+" ya que no existe la expresión: "+resultado.getExpresion()+".\n\n";
                 }
                 textSalida.append(formato);
-            }            
+            }  
+            //Generar json de salidas
+            try {
+                principal.programa.generarJson();
+                this.llenarArbol();
+            } catch (IOException ex) {
+                Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }          
     }//GEN-LAST:event_bAnalizarActionPerformed
+
+    private void eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActionPerformed
+        programa.borrarReportes();
+    }//GEN-LAST:event_eliminarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -495,6 +553,7 @@ public class principal extends javax.swing.JFrame {
     private javax.swing.JButton bVer;
     private javax.swing.JComboBox<String> comboReporte;
     private javax.swing.JComboBox<String> comboTipo;
+    private javax.swing.JButton eliminar;
     private javax.swing.JMenuItem generarXML;
     private javax.swing.JMenuItem guardar;
     private javax.swing.JMenuItem guardarComo;

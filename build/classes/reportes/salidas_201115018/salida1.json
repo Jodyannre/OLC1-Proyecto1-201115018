@@ -1,0 +1,1 @@
+{"validaciones":[{"Valor":"\\\u0027cadena entre comilla simple\\\u0027","ExpresionRegular":"EXP5","Resultado":"válida"},{"Valor":"P-385fde","ExpresionRegular":"P1","Resultado":"válida"},{"Valor":"P388fdc","ExpresionRegular":"P1","Resultado":"válida"}]}

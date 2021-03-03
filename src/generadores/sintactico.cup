@@ -1,6 +1,7 @@
 package generadores;
 import java_cup.runtime.Symbol;
 import java.util.ArrayList;
+import errores.Excepcion;
 
 /* Preliminaries to set up and use the scanner.  */
 parser code
@@ -14,10 +15,17 @@ parser code
     public ArrayList<String> auxiliar;
     public ArrayList<ArrayList<String>> alfabeto = new ArrayList<>();
     public ArrayList<String> alfabeto_individual = new ArrayList<>();
+    public ArrayList<Excepcion> errores = new ArrayList<>();
 
+    public void syntax_error(Symbol s){ 
+        errores.add(new Excepcion("Sintático", "Error de sintaxis detectado. Se detectó: " + s.value, (s.left), (s.right)));
+    }
+
+/*
     public void syntax_error(Symbol s){
         System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
     }
+*/
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
         System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
@@ -43,6 +51,9 @@ parser code
     }    
     public ArrayList<ArrayList<String>> get_alfabeto(){
         return alfabeto;
+    }   
+    public ArrayList<Excepcion> getErrores(){
+        return errores;
     }   
 
     public void add_alfabeto_individual(String texto){
@@ -153,7 +164,7 @@ terminal String SEPARACION,SIGNO_UNI, SIGNO_COMB, TEXTO, NOTACION, CONJ, SALTO,C
 //terminal COM_LINEA,COMENTARIO;
 
 /* Non-terminals */
-nonterminal sentencias, asignaciones, cadenas, asignacion, expresiones, seccion, operacion, sentencia;
+nonterminal sentencias, asignaciones, cadenas, asignacion, expresiones, seccion, operacion, sentencia, cadena;
 nonterminal inicio;
 
 
@@ -171,8 +182,6 @@ sentencias ::= asignaciones cadenas
 
 asignaciones ::= asignacion asignaciones
     |expresiones asignaciones
-    //|COM_LINEA asignaciones
-    //|COMENTARIO asignaciones
     |seccion
 ;
 
@@ -183,6 +192,7 @@ asignacion ::= CONJ DOSPUNTOS IDENTIFICADOR:id SIGNO_ASIGNACION NOTACION:no PUNT
                 //add_alfabeto(no);
                 //determinar_repetido(no);
             :}
+            | error PUNTOCOMA
 ;
 
 expresiones ::= IDENTIFICADOR:id SIGNO_ASIGNACION operacion 
@@ -236,18 +246,21 @@ sentencia ::= TEXTO:txt
                 expresionR += cm;
                 add_alfabeto_individual(cm);             
             :}
+    |error PUNTOCOMA
 ;
 
 seccion ::= SEPARACION SEPARACION
 ;
 
-cadenas ::= IDENTIFICADOR:id DOSPUNTOS TEXTO:txt 
+
+cadenas ::= cadena cadenas
+            |SIGNO_CIERRE
+;
+cadena ::= IDENTIFICADOR:id DOSPUNTOS TEXTO:txt 
             {:
                 add_id_entrada(id);
                 add_entrada(txt);
             :}
-            PUNTOCOMA cadenas
-    |SIGNO_CIERRE
-    //|COM_LINEA cadenas
-
+            PUNTOCOMA cadenas   
+            |error PUNTOCOMA
 ;

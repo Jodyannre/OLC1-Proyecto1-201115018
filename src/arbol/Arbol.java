@@ -7,6 +7,13 @@ package arbol;
 
 import automata.Afd;
 import automata.Transicion;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -63,8 +70,15 @@ public class Arbol {
             Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        this.pintarTablaSiguientes();
-        this.pintarTablaTransiciones();
+        try {
+            //this.pintarTablaSiguientes();
+            //this.pintarTablaTransiciones();
+            this.crearPdfSiguientes();
+            this.crearPdfTransiciones();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
     
     private NodoArbol recorrer(NodoArbol actual, StringBuilder sb){
@@ -172,17 +186,21 @@ public class Arbol {
     
     
     
-    public void calculos(){
+    public boolean calculos(){
         String elemento;
         this.nombrarHojas(this.getRaiz());
         this.calculoAPU(this.getRaiz());
         this.calculoSiguientes(this.getRaiz());   
         //this.pintar();
         elemento = this.calculoEstados();
+        if (elemento==null){
+            return false;
+        }
         if (!elemento.equals("")){
             System.out.println("El conjunto: "+elemento+" no existe. No se puede crear el AFD");
-            return;
+            return false;
         }
+        return true;
         //this.afd.pintar();
     }
     
@@ -220,6 +238,7 @@ public class Arbol {
         Estado estado = this.getTabla_estados().get(0);
         do{
             for (String elemento:this.alfabeto){
+                
                 if (elemento.contains("{") && elemento.contains("}")){
                     if (!this.conjuntoExiste(elemento.replaceAll("\\{","").replaceAll("\\}", ""))){
                         return elemento;
@@ -252,6 +271,9 @@ public class Arbol {
                     }                    
                     if (esConjunto){
                         elemento = elemento.replaceAll("\\{", "").replaceAll("\\}", "");
+                        if (!this.id_conjuntos.contains(elemento)){
+                            return null;
+                        }
                         actual_afd.add_transicion(this.formatearConjunto(elemento), nafd,elemento);
                     }else{
                         actual_afd.add_transicion(elemento, nafd,elemento);
@@ -318,7 +340,7 @@ public class Arbol {
         }
         return actual;
     }
-    
+    /*
     public void pintarTablaTransiciones() throws InterruptedException{
         StringBuilder sb = new StringBuilder();
         boolean encontrado = false;
@@ -375,7 +397,8 @@ public class Arbol {
             Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }
-    
+    */
+    /*
     public void pintarTablaSiguientes() throws InterruptedException{
         StringBuilder sb = new StringBuilder();
         boolean encontrado = false;
@@ -425,6 +448,111 @@ public class Arbol {
             Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    */
+    public void crearPdfSiguientes() throws FileNotFoundException{
+        String file = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\siguientes_201115018\\"+this.getNombreExpresion()+".pdf"; 
+        Cell newCell;
+        // Crear un documento pdf
+        PdfWriter writer = new PdfWriter(file); 
+        PdfDocument pdfDoc = new PdfDocument(writer);
+  
+        // Crear documento
+        Document doc = new Document(pdfDoc); 
+  
+        // Crear tabla y tamaño
+        Table table = new Table(3); 
+  
+        // Crear nombres de columnas
+        Cell nueva = new Cell();
+        newCell = new Cell().add(new Paragraph("#"));
+        newCell.setBold();
+        table.addCell(newCell);
+        newCell = new Cell().add(new Paragraph("Hoja"));
+        newCell.setBold();
+        table.addCell(newCell);
+        newCell = new Cell().add(new Paragraph("Siguientes"));
+        newCell.setBold();
+        table.addCell(newCell);
+                
+        //Agreagar filas
+        for(NodoArbol hoja:this.getTablaHojas()){
+            table.addCell(String.valueOf(hoja.getNumero()));
+            table.addCell(hoja.getDato());
+            table.addCell(hoja.getSiguientes().toString());
+        }
+
+        // Agregar tabla al documento
+        doc.add(table); 
+  
+        // Cerrar el documento 
+        doc.close(); 
+        System.out.println("Table created successfully..");         
+    }    
+    
+ 
+    public void crearPdfTransiciones() throws FileNotFoundException{
+        String file = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\transiciones_201115018\\"+this.getNombreExpresion()+".pdf"; 
+        int contador = 0;
+        Cell newCell;
+        boolean encontrado = false;
+        // Crear un documento pdf
+        PdfWriter writer = new PdfWriter(file); 
+        PdfDocument pdfDoc = new PdfDocument(writer);
+  
+        // Crear documento
+        Document doc = new Document(pdfDoc); 
+
+        while (contador <= this.alfabeto.size()){
+            contador++;
+        }
+                    
+        // Crear tabla y tamaño
+        Table table = new Table(contador); 
+        // Crear nombres de columnas
+        newCell = new Cell(2,1).add(new Paragraph("Estado"));
+        newCell.setBold();
+        table.addCell(newCell);
+        newCell = new Cell(1,contador).add(new Paragraph("Terminales"));
+        newCell.setBold();
+        table.addCell(newCell);
+        
+        for (String elemento:this.alfabeto){
+            table.addCell(elemento);
+        }
+        
+        //Agreagar filas
+        for(NodoAFD nodo:this.getAfd().getEstados()){
+            table.addCell(nodo.getNombre());
+            for (String alfabeto:this.alfabeto){
+                if (alfabeto.charAt(0)=='\"'&& alfabeto.charAt(alfabeto.length()-1)=='\"'){
+                alfabeto = alfabeto.substring(1, alfabeto.length()-1);}
+                if (alfabeto.charAt(0)=='{'&& alfabeto.charAt(alfabeto.length()-1)=='}'){
+                alfabeto = alfabeto.substring(1, alfabeto.length()-1);    
+                }
+                for (Transicion transicion:nodo.getTransiciones()){
+                    
+                    if (transicion.getSimbolos_mostrar().equals(alfabeto)){
+                        table.addCell(transicion.getDestino().getNombre());
+                        encontrado = true;
+                        break;
+                    }
+                }
+                if (!encontrado){
+                    table.addCell("--");
+                }else{
+                    encontrado = false;
+                }
+            }
+        }
+
+        // Agregar tabla al documento
+        doc.add(table); 
+  
+        // Cerrar el documento 
+        doc.close(); 
+        System.out.println("Table created successfully..");         
+    }      
+    
     
     private void asignarSiguientes(ArrayList<Integer>nodos,ArrayList<Integer>siguientes){
         for (int actual:nodos){
