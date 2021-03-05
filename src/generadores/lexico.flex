@@ -12,10 +12,10 @@ import java.util.ArrayList;
 %char 
 %cup 
 %unicode
-%ignorecase
+//%ignorecase
 //%column
 //%full
-//%state COMENTARIO
+//%state COMMENT
 //%state STRING
 
 
@@ -60,26 +60,31 @@ SEPARACION = "%%"
 SIGNO_APERTURA = "{" 
 SIGNO_CIERRE = "}"
 SIGNO_COMB = [.|]
+FIN_LINEA = \r\n|[\r\n\u2028\u2029\u000B\u000C\u0085]
 SIGNO_UNI = [+*?]
+COMA = ","
+SIGNO_RANGO = "~"
 //ASCII = [\x00-\x2f\x5B-\x60\x7B-\x7E]
+
+
+
+/*commentaries and text*/
 
 COM_A = "<"
 COM_C = ">"
-//ESPACIO = ({FIN_LINEA}|[\t\f])+
-COMM_LINEA = "/""/"({LETRA} | {DIGITO} | {ASCII}|{ESPACIO_BLANCO})* \n
+COMM_LINEA = "/""/"({LETRA} | {DIGITO} | {ASCII}|{ESPACIO_BLANCO})* {FIN_LINEA}
 COMM_MULTI = {COM_A}"!" ({LETRA} | {DIGITO} | {ASCII} | {SALTO} |{ESPACIO_BLANCO})* "!"{COM_C} 
 TEXTO = \"([^\"]|{COMILLA_DOBLE})*\"
 COMENTARIO = {COMM_MULTI}|{COMM_LINEA}
-COMA = ","
-SIGNO_RANGO = "~"
 
-/*Notaciones especiales en asignaciones*/
+
+
+
+/*Special notation*/
 NOTACION_LETRA_MA = {LETRA_MA}{ESPACIO_BLANCO}* {SIGNO_RANGO}{ESPACIO_BLANCO}* {LETRA_MA}
 NOTACION_LETRA_MI = ({LETRA_MI} {ESPACIO_BLANCO}*{SIGNO_RANGO}{ESPACIO_BLANCO}* {LETRA_MI})
 NOTACION_ASCII_COMB = {ASCII}{ESPACIO_BLANCO}*{SIGNO_RANGO}{ESPACIO_BLANCO}*{ASCII}
 NOTACION_NUMERO = {DIGITO} {ESPACIO_BLANCO}*{SIGNO_RANGO}{ESPACIO_BLANCO}* {DIGITO}
-
-
 NOTACION_LETRA_COMB = {LETRA}{ESPACIO_BLANCO}*{COMA}{ESPACIO_BLANCO}*{LETRA}{ESPACIO_BLANCO}*({COMA}{ESPACIO_BLANCO}*{LETRA}{ESPACIO_BLANCO}*)*
 NOTACION_NUMERO_COMB = {DIGITO}{ESPACIO_BLANCO}*{COMA}{ESPACIO_BLANCO}*{DIGITO}{ESPACIO_BLANCO}*({COMA}{ESPACIO_BLANCO}*{DIGITO}{ESPACIO_BLANCO}*)*
 NOTACION = {NOTACION_LETRA_MA}|{NOTACION_LETRA_MI}|{NOTACION_LETRA_COMB}|{NOTACION_NUMERO}|{NOTACION_NUMERO_COMB}|{NOTACION_ASCII_COMB}
@@ -91,9 +96,10 @@ NOTACION = {NOTACION_LETRA_MA}|{NOTACION_LETRA_MI}|{NOTACION_LETRA_COMB}|{NOTACI
     
 
 <YYINITIAL> {
+
   ";"                            {return new Symbol(sym.PUNTOCOMA, yyline, yychar, yytext());}
   ":"                            {return new Symbol(sym.DOSPUNTOS, yyline, yychar, yytext());}
-  \n {yychar=1;}
+  {FIN_LINEA} {yychar=1;yyline++;}
   {IDENTIFICADOR}                {return new Symbol(sym.IDENTIFICADOR, yyline, yychar, yytext());}
   {NOTACION}                     {return new Symbol(sym.NOTACION, yyline, yychar, yytext());} 
   {COMENTARIO}                   {} 

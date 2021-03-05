@@ -214,6 +214,20 @@ public class Afd {
                 if (nodo >=primero && nodo<=segundo){
                     return true;
                 }
+            }else if ((primero>=32 && primero<=47 || primero>=58 && primero<=64 || primero>=91 && primero <=96 || primero >=123&&primero<=125) &&
+                      (segundo>=32 && segundo<=47 || segundo>=58 && segundo<=64 || segundo>=91 && segundo <=96 || segundo >=123&&segundo<=125)) {
+                //32-47
+                //58-64
+                //91-96
+                //123-125
+                if ((nodo>=32 && nodo<=47 || nodo>=58 && nodo<=64 || nodo>=91 && nodo <=96 || nodo >=123&&nodo<=125) &&
+                      (nodo>=32 && nodo<=47 || nodo>=58 && nodo<=64 || nodo>=91 && nodo <=96 || nodo >=123&&nodo<=125)){
+                    if (nodo >=primero && nodo<=segundo){
+                    return true;
+                }
+                    
+                }
+
             }                         
         }
         return false;

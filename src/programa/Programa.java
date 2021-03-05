@@ -209,7 +209,12 @@ public class Programa {
                     resultado = new Resultado(entrada,expresion,result);
                     resultado.setValido(true);                
                     salida.add(resultado);
-                }                
+                    arbolEncontrado = false;
+                } else{
+                    result = "no es posible operarla";
+                    resultado = new Resultado(entrada,expresion,result);
+                    salida.add(resultado);
+                }               
             }
             
         }
@@ -238,7 +243,8 @@ public class Programa {
         builder.append("\"validaciones\":[");
         
         for (Resultado objeto:this.resultado){
-            if (objeto.isValido() && objeto.getResultado().equals("válida")){
+            //if (objeto.isValido() && objeto.getResultado().equals("válida"))
+            if (true){
                 ObjetoJson NewJson = new ObjetoJson(objeto.getValor(),objeto.getExpresion(),objeto.getResultado());
                 builder.append(gson.toJson(NewJson));
                 builder.append(",");

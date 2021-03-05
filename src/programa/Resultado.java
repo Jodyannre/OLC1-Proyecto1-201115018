@@ -15,12 +15,30 @@ public class Resultado {
     private String Resultado;
     private boolean valido;
     public Resultado(String valor, String expresion,String resultado){
-        this.valor = valor;
+        this.valor = formatearValor(valor);
         this.expresion = expresion;
         this.Resultado = resultado;
         this.valido = false;
     }
 
+    public String formatearValor(String expresion){
+        if (expresion.charAt(0)=='\"' && expresion.charAt(expresion.length()-1)=='\"'){
+            expresion = expresion.substring(1, expresion.length()-1);
+        }
+        /*
+        if (expresion.contains("\\\"")){
+            expresion = expresion.replaceAll("\\\\\"", "\\\"");
+        }
+        if (expresion.contains("\\\'")){
+            expresion = expresion.replaceAll("\\\\\'", "\\\'");
+        }
+        if (expresion.contains("\\\n")){
+            expresion = expresion.replaceAll("\\\\\n", "\\\n");
+        }      
+        */
+        
+        return expresion;
+    }
     /**
      * @return the valor
      */
