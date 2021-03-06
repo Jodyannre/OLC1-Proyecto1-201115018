@@ -53,7 +53,7 @@ public class Afd {
         return null;
     }
     
-    public void pintar() throws InterruptedException{
+    public void pintar(String rutaPrograma) throws InterruptedException{
         String linea = "digraph finite_state_machine {\n" 
         + "rankdir=LR;\n" 
         + "size=\"8,5\"\n"
@@ -91,7 +91,7 @@ public class Afd {
         linea = sb.toString();
         //System.out.println(linea);
         
-        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\afd_201115018";
+        String path = rutaPrograma+"\\reportes\\afd_201115018";
         try {
             Impresion.procesarDot(linea, this.getNombreExpresion(), path);
         } catch (IOException ex) {

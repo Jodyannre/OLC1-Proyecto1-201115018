@@ -10,9 +10,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,9 +40,10 @@ public class principal extends javax.swing.JFrame {
      * Creates new form Principal
      */
     public principal() throws IOException {
-        initComponents();
+        crearCarpetas();
+        initComponents();      
         llenarComboTipo();
-        textArea.setEditable(false);
+        //textArea.setEditable(false);
         textSalida.setEditable(false);
         llenarArbol();
         this.setLocationRelativeTo(null);
@@ -74,9 +77,9 @@ public class principal extends javax.swing.JFrame {
         menu = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         abrir = new javax.swing.JMenuItem();
+        nuevo = new javax.swing.JMenuItem();
         guardar = new javax.swing.JMenuItem();
         guardarComo = new javax.swing.JMenuItem();
-        generarXML = new javax.swing.JMenuItem();
         jSalir = new javax.swing.JMenu();
         bSalir = new javax.swing.JMenuItem();
 
@@ -127,7 +130,7 @@ public class principal extends javax.swing.JFrame {
 
         jLabel3.setText("Reporte");
 
-        eliminar.setText("jButton1");
+        eliminar.setText("Eliminar todo");
         eliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 eliminarActionPerformed(evt);
@@ -144,14 +147,29 @@ public class principal extends javax.swing.JFrame {
         });
         jMenu1.add(abrir);
 
+        nuevo.setText("Nuevo");
+        nuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nuevoActionPerformed(evt);
+            }
+        });
+        jMenu1.add(nuevo);
+
         guardar.setText("Guardar");
+        guardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarActionPerformed(evt);
+            }
+        });
         jMenu1.add(guardar);
 
         guardarComo.setText("Guardar como");
+        guardarComo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarComoActionPerformed(evt);
+            }
+        });
         jMenu1.add(guardarComo);
-
-        generarXML.setText("Generar XML");
-        jMenu1.add(generarXML);
 
         menu.add(jMenu1);
 
@@ -247,7 +265,8 @@ public class principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bGenerarActionPerformed
-
+        principal.texto = textArea.getText();
+        //System.out.println(principal.texto);
         textSalida.setText("");
         textSalida.removeAll();
         try {
@@ -255,6 +274,12 @@ public class principal extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Se han generado los autómatas.","Resultado de operación",JOptionPane.INFORMATION_MESSAGE);
                 Impresion.borrarDots();
                 this.llenarArbol();
+                comboReporte.removeAllItems();
+                try {
+                    llenarComboReporte(comboTipo.getSelectedItem().toString());
+                } catch (IOException ex) {
+                    Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+                }                
                 principal.datosCargados = true;
                 
                 if (programa.hayErrores()){
@@ -263,12 +288,21 @@ public class principal extends javax.swing.JFrame {
                 });
                 }
                 programa.getArboles().forEach((arbol)->{
-                    textSalida.append("Autómata: "+arbol.getNombreExpresion()+" generado con éxito.\n");           
+                    if (!arbol.yaFueGenerado()){
+                        textSalida.append("Autómata: "+arbol.getNombreExpresion()+" generado con éxito.\n");
+                    }                     
+                    arbol.setYaGenerado(true);
                 });
             }else{
                 JOptionPane.showMessageDialog(this, "Hay errores y no se lograron generar todos los autómatas.","Resultado de operación",JOptionPane.ERROR_MESSAGE);
                 Impresion.borrarDots();
-                this.llenarArbol();                
+                this.llenarArbol();        
+                comboReporte.removeAllItems();
+                try {
+                    llenarComboReporte(comboTipo.getSelectedItem().toString());
+                } catch (IOException ex) {
+                    Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+                }     
                 if (programa.hayErrores()){
                     programa.getErrores().forEach((err) -> {
                     textSalida.append("Error "+err.getsTipo()+", "+err.getDescripcion()+" en la línea: "+err.getLinea()+" y columna: "+err.getColumna()+"\n");
@@ -276,7 +310,10 @@ public class principal extends javax.swing.JFrame {
                 }
                 if (programa.getArboles().isEmpty()){principal.datosCargados=false;}else{principal.datosCargados = true;};
                 programa.getArboles().forEach((arbol)->{
-                    textSalida.append("Autómata: "+arbol.getNombreExpresion()+" generado con éxito.\n");           
+                    if (!arbol.yaFueGenerado()){
+                        textSalida.append("Autómata: "+arbol.getNombreExpresion()+" generado con éxito.\n");
+                    }                     
+                    arbol.setYaGenerado(true);         
                 });          
                 if (programa.hayErrores()){
                     programa.crearPdfErrores();
@@ -300,9 +337,9 @@ public class principal extends javax.swing.JFrame {
 
     private void bVerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bVerActionPerformed
         if (comboTipo.getSelectedIndex()!=-1 && comboReporte.getSelectedIndex()!=-1){
-            String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes";
+            String path = rutaPrograma+"\\reportes";
             path = path + "\\"+comboTipo.getSelectedItem().toString()+"\\"+comboReporte.getSelectedItem().toString();
-            System.out.println(path);
+            //System.out.println(path);
             try {
                 abrirArchivo(path);
             } catch (IOException ex) {
@@ -310,7 +347,7 @@ public class principal extends javax.swing.JFrame {
             }
         }else{
             JOptionPane.showMessageDialog(this, "No se ha seleccionado ningún reporte","Advertencia",JOptionPane.WARNING_MESSAGE);
-            System.out.println("No hay nada seleccionado");
+            //System.out.println("No hay nada seleccionado");
         }
     }//GEN-LAST:event_bVerActionPerformed
 
@@ -323,7 +360,7 @@ public class principal extends javax.swing.JFrame {
         selector.setAcceptAllFileFilterUsed(false);
         
         //Extensiones que se pueden seleccionar
-        FileNameExtensionFilter extension = new FileNameExtensionFilter("Solo textos","txt");
+        FileNameExtensionFilter extension = new FileNameExtensionFilter("Solo olc","olc");
         
         //Agregar extensiones al selector
         selector.addChoosableFileFilter(extension);
@@ -332,8 +369,10 @@ public class principal extends javax.swing.JFrame {
         // int returnValue = jfc.showSaveDialog(null);
 
         if (valorRetornado == JFileChooser.APPROVE_OPTION) {
+            pathActual = selector.getSelectedFile().getParent();
+            nombreArchivoActual = selector.getSelectedFile().getName();
             File selectedFile = selector.getSelectedFile();
-            System.out.println(selectedFile.getAbsolutePath());
+            //System.out.println(selectedFile.getAbsolutePath());
             try {
                 llenarTextArea(selectedFile);
             } catch (IOException ex) {
@@ -357,9 +396,9 @@ public class principal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Entrada analizada.","Resultado de la operación",JOptionPane.INFORMATION_MESSAGE);
             for (Resultado resultado:respuesta){
                 if (resultado.isValido()){
-                    formato = "La expresión: "+resultado.getValor()+" es "+resultado.getResultado()+" con la expresión: "+resultado.getExpresion()+".\n\n";
+                    formato = "La expresión: "+resultado.getValor()+" es "+resultado.getResultado()+" con la expresión: "+resultado.getExpresion()+".\n";
                 }else{
-                    formato = "La expresión: "+resultado.getValor()+" "+resultado.getResultado()+" ya que no existe la expresión: "+resultado.getExpresion()+".\n\n";
+                    formato = "La expresión: "+resultado.getValor()+" "+resultado.getResultado()+" ya que no existe la expresión: "+resultado.getExpresion()+".\n";
                 }
                 textSalida.append(formato);
             }  
@@ -375,7 +414,46 @@ public class principal extends javax.swing.JFrame {
 
     private void eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActionPerformed
         programa.borrarReportes();
+        comboReporte.removeAllItems();
+        try {
+            llenarComboReporte(comboTipo.getSelectedItem().toString());
+        } catch (IOException ex) {
+            Logger.getLogger(principal.class.getName()).log(Level.SEVERE, null, ex);
+        }     
+        this.llenarArbol();
+        programa.getArboles().clear();
+        programa.getAfnds().clear();
+        programa.getErrores().clear();
     }//GEN-LAST:event_eliminarActionPerformed
+
+    private void guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarActionPerformed
+        if (pathActual == "" || nombreArchivoActual==""){
+            this.guardarComo(); 
+        }else{
+           String path = principal.pathActual+"\\"+principal.nombreArchivoActual.replaceAll(".olc", "")+".olc";
+           try {
+             FileWriter myWriter = new FileWriter(path);
+             myWriter.write(textArea.getText());
+             myWriter.close();
+
+           } catch (IOException e) {
+
+             e.printStackTrace();
+           }           
+        }
+        
+
+    }//GEN-LAST:event_guardarActionPerformed
+
+    private void guardarComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarComoActionPerformed
+        this.guardarComo();        
+    }//GEN-LAST:event_guardarComoActionPerformed
+
+    private void nuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevoActionPerformed
+        pathActual = "";
+        nombreArchivoActual = "";
+        textArea.setText("{\n}");
+    }//GEN-LAST:event_nuevoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -405,7 +483,9 @@ public class principal extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         principal.programa = new Programa();
-        Impresion.declararDirectorios();
+        rutaPrograma = System.getProperty("user.dir");
+        programa.setRutaPrograma(rutaPrograma);
+        Impresion.declararDirectorios(rutaPrograma);
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -420,7 +500,7 @@ public class principal extends javax.swing.JFrame {
     
     
     private void llenarComboTipo() throws IOException{
-        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes";
+        String path = rutaPrograma+"\\reportes";
         
         /*
             Files.find(Paths.get(path),
@@ -435,14 +515,14 @@ public class principal extends javax.swing.JFrame {
             return new File(current, name).isDirectory();
           }
         });
-        System.out.println(Arrays.toString(directorios));
+        //System.out.println(Arrays.toString(directorios));
         for (String s:directorios){
             comboTipo.addItem(s);
         }          
     }
     
     private void llenarComboReporte(String tipo) throws IOException{
-        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes";
+        String path = rutaPrograma+"\\reportes";
         path = path+"\\"+tipo;
             
         File file = new File(path);
@@ -452,7 +532,7 @@ public class principal extends javax.swing.JFrame {
             return new File(actual, nombre).isFile();
           }
         });
-        System.out.println(Arrays.toString(archivos));
+        //System.out.println(Arrays.toString(archivos));
         for (String s:archivos){
             comboReporte.addItem(s);
         }          
@@ -483,7 +563,7 @@ public class principal extends javax.swing.JFrame {
     
     private void llenarArbol(){
         arbolArchivos.removeAll();
-        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes";
+        String path = rutaPrograma+"\\reportes";
         String hijos[];    
         File file = new File(path);
         DefaultMutableTreeNode padre,hijo;       
@@ -500,7 +580,7 @@ public class principal extends javax.swing.JFrame {
             return new File(actual, nombre).isDirectory();
           }
         });
-        System.out.println(Arrays.toString(archivos));
+        //System.out.println(Arrays.toString(archivos));
         for (String hojaPadre:archivos){
             //Recorrer padres
             padre = new DefaultMutableTreeNode(hojaPadre);
@@ -534,12 +614,68 @@ public class principal extends javax.swing.JFrame {
         FileReader f = new FileReader(ruta);
         BufferedReader b = new BufferedReader(f);
         while((cadena = b.readLine())!=null) {
-            salida +=cadena;
+            salida +=cadena+"\n";
         }
-        b.close();
+        b.close();        
         texto = salida;
+        //System.out.println(texto);
         //return salida;
     }
+    
+    private static void crearCarpetas(){
+        String rutaReportes = rutaPrograma+"\\"+"reportes";
+        crearCarpeta(rutaReportes);
+        crearCarpeta(rutaReportes+"\\"+"afd_201115018");
+        crearCarpeta(rutaReportes+"\\"+"afnd_201115018");
+        crearCarpeta(rutaReportes+"\\"+"arboles_201115018");
+        crearCarpeta(rutaReportes+"\\"+"errores_201115018");
+        crearCarpeta(rutaReportes+"\\"+"salidas_201115018");
+        crearCarpeta(rutaReportes+"\\"+"siguientes_201115018");
+        crearCarpeta(rutaReportes+"\\"+"transiciones_201115018");
+    }
+    
+    private static void crearCarpeta(String ruta){
+        try {
+          Path path = Paths.get(ruta);
+          Files.createDirectories(path);
+          //System.out.println("Directory is created!");
+        } catch (IOException e) {
+          System.err.println("Failed to create directory!" + e.getMessage());
+
+        }           
+    }
+    
+    private void guardarComo(){
+        String nombre;
+        String ruta;
+        String path;
+        JFileChooser directorio = new JFileChooser();
+        directorio.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int valorRetornado = directorio.showSaveDialog(null);
+
+
+        if (valorRetornado == JFileChooser.APPROVE_OPTION) {
+            ruta = directorio.getSelectedFile().getParent();
+            nombre = directorio.getSelectedFile().getName();
+            pathActual = ruta;
+            nombreArchivoActual = nombre;
+            path = ruta+"\\"+nombre+".olc";
+            try {
+              FileWriter writer = new FileWriter(path);
+              writer.write(textArea.getText());
+              writer.close();
+
+            } catch (IOException e) {
+
+              e.printStackTrace();
+            }            
+            
+        }             
+    }
+    
+    static private String rutaPrograma;
+    static private String nombreArchivoActual;
+    static private String pathActual;
     static private boolean datosCargados = false;
     static private String texto;
     static private Programa programa;
@@ -554,7 +690,6 @@ public class principal extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboReporte;
     private javax.swing.JComboBox<String> comboTipo;
     private javax.swing.JButton eliminar;
-    private javax.swing.JMenuItem generarXML;
     private javax.swing.JMenuItem guardar;
     private javax.swing.JMenuItem guardarComo;
     private javax.swing.JLabel jLabel1;
@@ -564,6 +699,7 @@ public class principal extends javax.swing.JFrame {
     private javax.swing.JMenu jSalir;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuBar menu;
+    private javax.swing.JMenuItem nuevo;
     private javax.swing.JScrollPane salidaScroll;
     private javax.swing.JTextArea textArea;
     private javax.swing.JTextArea textSalida;

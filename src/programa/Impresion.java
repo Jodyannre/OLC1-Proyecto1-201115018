@@ -5,14 +5,10 @@
  */
 package programa;
 
-import arbol.Arbol;
-import automata.Afnd;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -22,14 +18,14 @@ import java.util.ArrayList;
 public class Impresion {
    private static ArrayList<String>directorios;
     
-    public static void declararDirectorios(){
+    public static void declararDirectorios(String rutaPrograma){
         directorios = new ArrayList<>();
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\afd_201115018");
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\afnd_201115018");
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\arboles_201115018");
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\errores_201115018");
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\siguientes_201115018");
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\transiciones_201115018");        
+        directorios.add(rutaPrograma+"\\reportes\\afd_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\afnd_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\arboles_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\errores_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\siguientes_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\transiciones_201115018");        
     }
     
     public static void procesarDot(String cadena,String nombre,String ruta) throws IOException, InterruptedException{

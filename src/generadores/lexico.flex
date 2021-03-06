@@ -51,7 +51,7 @@ ASCII = [\"#$%&\'\(\)\*\+,-.\/:\;\<\=\>\?@\[\^_´\{\}\|]
 
 /*Instruccion*/
 IDENTIFICADOR = ({LETRA_MI}|{LETRA_MA})({LETRA}|{DIGITO}|_)*
-CONJUNTO = "{"{IDENTIFICADOR}"}"
+CONJUNTO = "{"{ESPACIO_BLANCO}*{IDENTIFICADOR}{ESPACIO_BLANCO}*"}"
 SALTO = \\"n"
 COMILLA = \\"\'"
 COMILLA_DOBLE = \\"\""
@@ -60,7 +60,7 @@ SEPARACION = "%%"
 SIGNO_APERTURA = "{" 
 SIGNO_CIERRE = "}"
 SIGNO_COMB = [.|]
-FIN_LINEA = \r\n|[\r\n\u2028\u2029\u000B\u000C\u0085]
+FIN_LINEA = \r|\n|\r\n
 SIGNO_UNI = [+*?]
 COMA = ","
 SIGNO_RANGO = "~"
@@ -69,11 +69,11 @@ SIGNO_RANGO = "~"
 
 
 /*commentaries and text*/
-
+InputCharacter = [^\r\n]
 COM_A = "<"
 COM_C = ">"
-COMM_LINEA = "/""/"({LETRA} | {DIGITO} | {ASCII}|{ESPACIO_BLANCO})* {FIN_LINEA}
-COMM_MULTI = {COM_A}"!" ({LETRA} | {DIGITO} | {ASCII} | {SALTO} |{ESPACIO_BLANCO})* "!"{COM_C} 
+COMM_LINEA = "//" {InputCharacter}* {FIN_LINEA}?
+COMM_MULTI = {COM_A}"!" [^!>]* "!"{COM_C} 
 TEXTO = \"([^\"]|{COMILLA_DOBLE})*\"
 COMENTARIO = {COMM_MULTI}|{COMM_LINEA}
 
@@ -99,7 +99,7 @@ NOTACION = {NOTACION_LETRA_MA}|{NOTACION_LETRA_MI}|{NOTACION_LETRA_COMB}|{NOTACI
 
   ";"                            {return new Symbol(sym.PUNTOCOMA, yyline, yychar, yytext());}
   ":"                            {return new Symbol(sym.DOSPUNTOS, yyline, yychar, yytext());}
-  {FIN_LINEA} {yychar=1;yyline++;}
+  {FIN_LINEA} {yychar=1;}
   {IDENTIFICADOR}                {return new Symbol(sym.IDENTIFICADOR, yyline, yychar, yytext());}
   {NOTACION}                     {return new Symbol(sym.NOTACION, yyline, yychar, yytext());} 
   {COMENTARIO}                   {} 
@@ -114,7 +114,6 @@ NOTACION = {NOTACION_LETRA_MA}|{NOTACION_LETRA_MI}|{NOTACION_LETRA_COMB}|{NOTACI
   {SALTO}                        {return new Symbol(sym.SALTO, yyline, yychar, yytext());} 
   {COMILLA}                      {return new Symbol(sym.COMILLA, yyline, yychar, yytext());} 
   {COMILLA_DOBLE}                {return new Symbol(sym.COMILLA_DOBLE, yyline, yychar, yytext());} 
-  
   {ESPACIO_BLANCO} {}
    .                             {errores.add(new Excepcion("Léxico", "Caracter no válido detectado: " + yytext(), yyline, yychar));}  
 }

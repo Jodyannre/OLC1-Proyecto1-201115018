@@ -37,6 +37,7 @@ public class Arbol {
     private ArrayList<Estado> tabla_estados;
     private ArrayList<String>conjuntos;
     private ArrayList<String>id_conjuntos;
+    private boolean yaGenerado;
     private int nombres_estados[];
     private Afd afd;
     public Arbol(){
@@ -50,9 +51,10 @@ public class Arbol {
         this.nombres_estados[1]=65;
         this.contadorEstados=0;
         this.afd = new Afd();
+        this.yaGenerado = false;
     }
     
-    public void pintar() throws InterruptedException{
+    public void pintar(String rutaPrograma) throws InterruptedException{
         String cabecera = "digraph Arbol {"+"\n"
                 + " rankdir=UD;"+"\n"
                 + " size=\"8,5\""+"\n"
@@ -63,7 +65,7 @@ public class Arbol {
         sb.append("}");
         cabecera = sb.toString();
         //System.out.println(cabecera); 
-        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\arboles_201115018";
+        String path = rutaPrograma+"\\reportes\\arboles_201115018";
         try {
             Impresion.procesarDot(cabecera, this.nombreExpresion, path);
         } catch (IOException ex) {
@@ -73,8 +75,8 @@ public class Arbol {
         try {
             //this.pintarTablaSiguientes();
             //this.pintarTablaTransiciones();
-            this.crearPdfSiguientes();
-            this.crearPdfTransiciones();
+            this.crearPdfSiguientes(rutaPrograma);
+            this.crearPdfTransiciones(rutaPrograma);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -449,8 +451,8 @@ public class Arbol {
         }
     }
     */
-    public void crearPdfSiguientes() throws FileNotFoundException{
-        String file = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\siguientes_201115018\\"+this.getNombreExpresion()+".pdf"; 
+    public void crearPdfSiguientes(String rutaPrograma) throws FileNotFoundException{
+        String file = rutaPrograma+"\\reportes\\siguientes_201115018\\"+this.getNombreExpresion()+".pdf"; 
         Cell newCell;
         // Crear un documento pdf
         PdfWriter writer = new PdfWriter(file); 
@@ -490,8 +492,8 @@ public class Arbol {
     }    
     
  
-    public void crearPdfTransiciones() throws FileNotFoundException{
-        String file = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\transiciones_201115018\\"+this.getNombreExpresion()+".pdf"; 
+    public void crearPdfTransiciones(String rutaPrograma) throws FileNotFoundException{
+        String file = rutaPrograma+"\\reportes\\transiciones_201115018\\"+this.getNombreExpresion()+".pdf"; 
         int contador = 0;
         Cell newCell;
         boolean encontrado = false;
@@ -900,6 +902,20 @@ public class Arbol {
     public void setNombreExpresion(String nombreExpresion) {
         this.nombreExpresion = nombreExpresion;
         this.afd.setNombreExpresion(nombreExpresion);
+    }
+
+    /**
+     * @return the yaGenerado
+     */
+    public boolean yaFueGenerado() {
+        return yaGenerado;
+    }
+
+    /**
+     * @param yaGenerado the yaGenerado to set
+     */
+    public void setYaGenerado(boolean yaGenerado) {
+        this.yaGenerado = yaGenerado;
     }
  
     

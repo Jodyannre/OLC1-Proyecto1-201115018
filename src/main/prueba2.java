@@ -27,7 +27,11 @@ import programa.Programa;
  * @author Jers_
  */
 public class prueba2 {
-    public static void main(String[] args) throws IOException, InterruptedException {      
+    public static void main(String[] args) throws IOException, InterruptedException {     
+        
+        String path = System.getProperty("user.dir");
+        System.out.println(path);
+        
         ArrayList<String>conjuntos;
         ArrayList<String>id_conjuntos;
         ArrayList<String>er;
@@ -72,13 +76,13 @@ public class prueba2 {
             arbol.setConjuntos(conjuntos);
             arbol.setId_conjuntos(id_conjuntos);
             afnd.setNombreExpresion(id_er.get(0));
-            afnd.pintar();
+            //afnd.pintar();
             arbol.calculos();
-            arbol.pintar();
+            //arbol.pintar();
             //arbol.pintarTablaTransiciones();
             //arbol.pintarTablaSiguientes();
             arbol.getAfd().setNombreExpresion(id_er.get(0));
-            arbol.getAfd().pintar();           
+            //arbol.getAfd().pintar();           
             resultado = arbol.getAfd().evaluar(cadenaEvaluar);
             System.out.println("El resultado es: "+resultado);
             System.out.println("De la cadena: "+cadenaEvaluar);

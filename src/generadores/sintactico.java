@@ -175,12 +175,6 @@ public class sintactico extends java_cup.runtime.lr_parser {
         errores.add(new Excepcion("Sintático", "Error de sintaxis detectado. Se detectó: " + s.value, (s.left), (s.right)));
     }
 
-/*
-    public void syntax_error(Symbol s){
-        System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
-    }
-*/
-
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
         System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
     }
@@ -211,12 +205,6 @@ public class sintactico extends java_cup.runtime.lr_parser {
     }   
 
     public void add_alfabeto_individual(String texto){
-/*
-        if (texto.contains("{")){
-            texto = texto.replaceAll("\\{","");
-            texto = texto.replaceAll("\\}","");
-        }   
-*/
         if (!alfabeto_individual.contains(texto)){
             alfabeto_individual.add(texto);
         }     
@@ -228,12 +216,7 @@ public class sintactico extends java_cup.runtime.lr_parser {
         alfabeto.add(auxiliar);  
     }
 
-
-/** Cup generated class to encapsulate user supplied action code.*/
-@SuppressWarnings({"rawtypes", "unchecked", "unused"})
-class CUP$sintactico$actions {
-
-
+    String quitarBlando = "";
     String conjunto="";
     String expresionR = "";
     public void add_er(String texto){
@@ -256,61 +239,12 @@ class CUP$sintactico$actions {
     }
 
 
-    /*
-    public void determinar_repetido(String texto){
-        boolean enConj = false;
-        boolean may=false,min=false,dig=false,ascii=false;
-        String copia = texto;
-        copia = copia.replace("\"","");
-        char c = copia.charAt(0);
-        int primero,segundo;
-        for (String s: conjuntos){
-            if (s.contains("~")){
-                primero = s.charAt(0);
-                segundo = s.charAt(2);
-                if (primero >64 && segundo<91){
-                    may = true;
-                }else if (primero>47 && segundo<58){
-                    dig = true;
-                }else if (primero>96 && segundo<123){
-                    min = true;
-                }else{
-                    ascii = true;
-                }
-
-                if (c >64 && c<91 && may){
-                    enConj = true;
-                    return;
-                }else if (c>47 && c<58 && dig){
-                    enConj = true;
-                    return;
-                }else if (c>96 && c<123 && min){
-                    enConj = true;
-                    return;
-                }else if (c>=primero && c<=segundo && ascii){
-                    enConj = true;
-                    return;
-                }
-                ascii = false;
-                dig = false;
-                may = false;
-                min = false;
+/** Cup generated class to encapsulate user supplied action code.*/
+@SuppressWarnings({"rawtypes", "unchecked", "unused"})
+class CUP$sintactico$actions {
 
 
-            }else{
-                copia = s;
-                copia = copia.replaceAll(",","");
-                if (copia.contains(Character.toString(c))){
-                    return;
-                }
-            }
-        }
 
-        if (!enConj){
-            add_alfabeto(texto);
-        }
-    }
-    */
 
 
   private final sintactico parser;

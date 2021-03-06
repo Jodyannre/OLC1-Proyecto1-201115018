@@ -615,7 +615,7 @@ public class Afnd {
     }
     
     
-    public void pintar() throws InterruptedException{
+    public void pintar(String rutaPrograma) throws InterruptedException{
         Nodo inicio = this.listaEstados.getPrimero();
         this.listaEstados.getUltimo().setFinal(true);
         String cabecera = "digraph afnd {"+"\n"
@@ -634,7 +634,7 @@ public class Afnd {
         cabecera = sb.toString();
         //System.out.println(cabecera);
         //System.out.println("ε");
-        String path = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\afnd_201115018";
+        String path = rutaPrograma+"\\reportes\\afnd_201115018";
         try {
             Impresion.procesarDot(cabecera, this.getNombreExpresion(), path);
         } catch (IOException ex) {

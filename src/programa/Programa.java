@@ -14,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -38,6 +37,7 @@ import org.apache.commons.io.FileUtils;
  * @author Jers_
  */
 public class Programa {
+    private String rutaPrograma;
     private ArrayList<Arbol> arboles;
     private int contadorJson;
     private ArrayList<Afnd> afnds;
@@ -70,6 +70,7 @@ public class Programa {
         this.hayErrores = false;
         this.resultado = new ArrayList();
         this.contadorJson = 1;
+        this.rutaPrograma="";
     }
     
     
@@ -112,6 +113,7 @@ public class Programa {
         
         //Recuperar información del scanner
         setConjuntos(parser.getConjuntos());
+        this.quitarEspaciosEnBlanco();
         setId_conjuntos(parser.get_id_conjuntos());
         setEr(parser.getER());
         setId_er(parser.get_Id_ER());
@@ -147,12 +149,12 @@ public class Programa {
                     arbol.setConjuntos(getConjuntos());
                     arbol.setId_conjuntos(getId_conjuntos());
                     afnd.setNombreExpresion(getId_er().get(i));
-                    afnd.pintar();
+                    afnd.pintar(rutaPrograma);
                     if (!arbol.calculos()){
 
                     }else{
-                        arbol.pintar();
-                        arbol.getAfd().pintar();  
+                        arbol.pintar(rutaPrograma);
+                        arbol.getAfd().pintar(rutaPrograma);  
                         this.getArboles().add(arbol);
                         this.getAfnds().add(afnd);                          
                     }                     
@@ -236,7 +238,7 @@ public class Programa {
         FileWriter fw;
         BufferedWriter bw;
         StringBuilder builder = new StringBuilder();
-        String ruta = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\salidas_201115018\\salida"+contadorJson+".json";    
+        String ruta = rutaPrograma+"\\reportes\\salidas_201115018\\salida"+contadorJson+".json";    
         File file;
         String json;
         builder.append("{");
@@ -323,7 +325,7 @@ public class Programa {
     */
     
     public void crearPdfErrores() throws FileNotFoundException{
-        String file = "C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\errores_201115018\\"+contadorJson+"_errores.pdf"; 
+        String file = rutaPrograma+"\\reportes\\errores_201115018\\"+contadorJson+"_errores.pdf"; 
         int contadorError = 1;
   
         // Crear un documento pdf
@@ -365,13 +367,13 @@ public class Programa {
     public void borrarReportes(){
         ArrayList<String>directorios = new ArrayList<>();
         directorios = new ArrayList<>();
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\afd_201115018");
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\afnd_201115018");
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\arboles_201115018");
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\errores_201115018");
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\siguientes_201115018");
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\transiciones_201115018"); 
-        directorios.add("C:\\Users\\Jers_\\OneDrive\\Documents\\NetBeansProjects\\[compi1]proyecto1\\src\\reportes\\salidas_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\afd_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\afnd_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\arboles_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\errores_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\siguientes_201115018");
+        directorios.add(rutaPrograma+"\\reportes\\transiciones_201115018"); 
+        directorios.add(rutaPrograma+"\\reportes\\salidas_201115018");
         
         for (String directorio:directorios){
             try {
@@ -536,5 +538,25 @@ public class Programa {
      */
     public void setHayErrores(boolean hayErrores) {
         this.hayErrores = hayErrores;
+    }
+    
+    public void quitarEspaciosEnBlanco(){
+        for(int i = 0;i<this.getConjuntos().size();i++){
+            this.getConjuntos().set(i,this.getConjuntos().get(i).replaceAll(" ", ""));
+        }   
+    }
+
+    /**
+     * @return the rutaPrograma
+     */
+    public String getRutaPrograma() {
+        return rutaPrograma;
+    }
+
+    /**
+     * @param rutaPrograma the rutaPrograma to set
+     */
+    public void setRutaPrograma(String rutaPrograma) {
+        this.rutaPrograma = rutaPrograma;
     }
 }
