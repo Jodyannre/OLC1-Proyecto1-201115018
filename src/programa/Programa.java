@@ -149,11 +149,13 @@ public class Programa {
                     arbol.setConjuntos(getConjuntos());
                     arbol.setId_conjuntos(getId_conjuntos());
                     afnd.setNombreExpresion(getId_er().get(i));
-                    afnd.pintar(rutaPrograma);
+                    
                     if (!arbol.calculos()){
 
                     }else{
+                        
                         arbol.pintar(rutaPrograma);
+                        afnd.pintar(rutaPrograma);
                         arbol.getAfd().pintar(rutaPrograma);  
                         this.getArboles().add(arbol);
                         this.getAfnds().add(afnd);                          

@@ -31,15 +31,19 @@ public class Impresion {
     public static void procesarDot(String cadena,String nombre,String ruta) throws IOException, InterruptedException{
         String rutaDot = ruta+"\\"+nombre+".dot";
         String nombreSalida = ruta+"\\"+nombre+".svg";
+        System.out.println(rutaDot);
+        System.out.println(nombreSalida);
         String dot = "C:\\Program Files\\Graphviz\\bin\\dot.exe";
         FileWriter fichero = null;
         PrintWriter pw = null;
         try{
             fichero = new FileWriter(rutaDot);
             pw = new PrintWriter(fichero);
+            //System.out.println(cadena);
             pw.append(cadena.toString());
         }catch (Exception ex){
             ex.printStackTrace();
+            System.out.println(ex);
         } finally{
             try{
                 if (fichero != null){
@@ -47,13 +51,16 @@ public class Impresion {
                 }
             }catch(Exception ex2){
                 ex2.printStackTrace();
+                System.out.println(ex2);
             }
             try{
+                //Thread.sleep(200);
                 String cmd = dot+" -Tsvg "+ rutaDot +" -o "+nombreSalida;
                 Runtime.getRuntime().exec(cmd);
 
             }catch(IOException ex3){
                 ex3.printStackTrace();
+                System.out.println(ex3);
             }
         }      
     }

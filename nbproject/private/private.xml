@@ -3,11 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Jers_/OneDrive/Documents/NetBeansProjects/%5Bcompi1%5Dproyecto1/src/programa/Programa.java</file>
-            <file>file:/C:/Users/Jers_/OneDrive/Documents/NetBeansProjects/%5Bcompi1%5Dproyecto1/src/generadores/lexico.flex</file>
-            <file>file:/C:/Users/Jers_/OneDrive/Documents/NetBeansProjects/%5Bcompi1%5Dproyecto1/src/main/prueba2.java</file>
-            <file>file:/C:/Users/Jers_/OneDrive/Documents/NetBeansProjects/%5Bcompi1%5Dproyecto1/src/ventanas/principal.java</file>
-            <file>file:/C:/Users/Jers_/OneDrive/Documents/NetBeansProjects/%5Bcompi1%5Dproyecto1/src/generadores/sintactico.cup</file>
+            <file>file:/C:/Users/Jers_/OneDrive/Documents/NetBeansProjects/%5Bcompi1%5Dproyecto1/src/automata/Afd.java</file>
+            <file>file:/C:/Users/Jers_/OneDrive/Documents/NetBeansProjects/%5Bcompi1%5Dproyecto1/src/arbol/Arbol.java</file>
         </group>
     </open-files>
 </project-private>

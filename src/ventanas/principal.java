@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -25,7 +24,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import programa.Impresion;
 import programa.Programa;
 import programa.Resultado;
@@ -38,6 +36,7 @@ public class principal extends javax.swing.JFrame {
 
     /**
      * Creates new form Principal
+     * @throws java.io.IOException
      */
     public principal() throws IOException {
         crearCarpetas();
@@ -84,6 +83,8 @@ public class principal extends javax.swing.JFrame {
         bSalir = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("REGEXIVE");
+        setResizable(false);
 
         textArea.setColumns(20);
         textArea.setRows(5);
@@ -673,12 +674,13 @@ public class principal extends javax.swing.JFrame {
         }             
     }
     
-    static private String rutaPrograma;
-    static private String nombreArchivoActual;
-    static private String pathActual;
-    static private boolean datosCargados = false;
-    static private String texto;
-    static private Programa programa;
+    static private String rutaPrograma; //Guarda la ruta actual en donde se está ejecutando el programa.
+    static private String nombreArchivoActual; //Guarda el nombre del archivo actual abierto o creado.
+    static private String pathActual; // Guarda la ruta actual del archivo abierto o creado.
+    static private boolean datosCargados = false; //Booleano que determina si se ha cargado nueva información para activar la opción de validación de cadenas.
+    static private String texto; //Variable que guarda un respaldo del texto que se encuentre en el área de texto del archivo.
+    static private Programa programa; //Objeto de la clase principal del programa que realizará todos los cálculos.
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Salida;
     private javax.swing.JMenuItem abrir;

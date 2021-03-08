@@ -70,6 +70,7 @@ public class Arbol {
             Impresion.procesarDot(cabecera, this.nombreExpresion, path);
         } catch (IOException ex) {
             Logger.getLogger(Arbol.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Hay errores en la generación de los dots");
         }
         
         try {
@@ -488,7 +489,7 @@ public class Arbol {
   
         // Cerrar el documento 
         doc.close(); 
-        System.out.println("Table created successfully..");         
+        //ystem.out.println("Creada");         
     }    
     
  
@@ -552,7 +553,7 @@ public class Arbol {
   
         // Cerrar el documento 
         doc.close(); 
-        System.out.println("Table created successfully..");         
+        //System.out.println("Creada");         
     }      
     
     
